@@ -1,11 +1,11 @@
 import random
-from helpers.helpers import generateRandom, generateRandomValues
+from helpers.useRandom import generateRandom, generateRandomValues
 
 class EvolutionalStrategy: 
    #  
-   def __init__(self, populationSize, fitnessFunction, ff_table_value, bounds, dimensions = 2, mutation_rate=0.1, mutation_strength=0.1):
-      self.populationSize = populationSize if populationSize % 2 == 0 else populationSize + 1
-      self.fitnessFunction = fitnessFunction
+   def __init__(self, population_size, fitness_function, ff_table_value, bounds, dimensions = 2, mutation_rate=0.1, mutation_strength=0.1):
+      self.populationSize = population_size if population_size % 2 == 0 else population_size + 1
+      self.lstm = fitness_function
       self.ff_table_value = ff_table_value #ff = fitness function
       self.bounds = bounds
       self.dimensions = dimensions 
@@ -13,7 +13,7 @@ class EvolutionalStrategy:
       self.mutation_strength = mutation_strength
 
       self.generatePopulation()
-      self.populationErrors = []
+      self.populationErrors = [999999999]
 
    def generateRandomParent(self):
       parent = []
@@ -28,7 +28,7 @@ class EvolutionalStrategy:
       second_parent = self.getParent()
       
       for j in range(self.dimensions):
-         child.append((first_parent[j] + second_parent[j]) / 2,)
+         child.append((first_parent[j] + second_parent[j]) / 2)
       return child
    
    def generatePopulation(self):
@@ -42,7 +42,8 @@ class EvolutionalStrategy:
       self.populationErrors = []
 
       for individ in self.population:
-         fitnessValue = self.fitnessFunction(individ)
+         self.lstm.set_params(individ)
+         fitnessValue = self.lstm.compute()
          error = abs(fitnessValue - self.ff_table_value)
          self.populationErrors.append(error)
 
@@ -81,7 +82,6 @@ class EvolutionalStrategy:
                   
                self.population[i][j] = mutated_value
 
-
    def selectNextPopulation(self):
       self.population = self.population[:self.populationSize]
 
@@ -97,15 +97,19 @@ class EvolutionalStrategy:
       # self.population = [self.population[i] for i in sorted_indices]
       # self.populationErrors = [self.populationErrors[i] for i in sorted_indices]
 
-   def optimize(self, error_gap):
-      while(error_gap < abs(self.fitnessFunction(self.population[0]) - self.ff_table_value)):
+   def optimize(self, precision):
+      while(precision < self.populationErrors[0]):
+         print(self.populationErrors[0])
          self.calcPopulationErrors()
          self.formNewPopulation()
          self.mutatePopulation()
          self.calcPopulationErrors()
          self.sortPopulationByError()
          self.selectNextPopulation()
-         print(abs(self.fitnessFunction(self.population[0]) - self.ff_table_value))
+         # print(self.population[0])
+         # print(self.populationErrors[0])
+
+      return self.population[0]
 
 
       
