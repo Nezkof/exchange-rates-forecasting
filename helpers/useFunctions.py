@@ -5,3 +5,6 @@ def use_sigmoid(x):
 
 def use_tanh(x):
     return float(np.tanh(x))
+
+def use_identity(x):
+    return x

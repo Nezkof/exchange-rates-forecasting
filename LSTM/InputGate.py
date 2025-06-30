@@ -10,7 +10,7 @@ class InputGate:
       self.tanh_layer = FCL(use_tanh, hidden_size)
 
    def compute(self, x):
-      z_vector = self.h_prev + x
+      z_vector = self.h_prev + [x]
       sigmoid_values = self.sigmoid_layer.calculate(z_vector, self.sigmoid_weights, self.sigmoid_biases)
       tanh_values = self.tanh_layer.calculate(z_vector, self.tanh_weights, self.tanh_biases)
 

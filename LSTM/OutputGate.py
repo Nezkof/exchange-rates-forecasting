@@ -9,7 +9,7 @@ class OutputGate:
       self.sigmoid_layer = FCL(use_sigmoid, hidden_size)
 
    def compute(self, x):
-      z_vector = self.h_prev + x
+      z_vector = self.h_prev + [x]
       tanh_c_values = [use_tanh(x) for x in self.c_prev]
       sigmoid_values = self.sigmoid_layer.calculate(z_vector, self.weights, self.biases)
 
@@ -18,7 +18,7 @@ class OutputGate:
    def set_biases(self, bias):
       self.biases = bias 
    
-   def set_weight(self, weight):
+   def set_weights(self, weight):
       self.weights = weight   
    
    def set_c_prev(self, c_prev):

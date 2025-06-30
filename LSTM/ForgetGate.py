@@ -9,7 +9,7 @@ class ForgetGate:
       self.sigmoid_layer = FCL(use_sigmoid, hidden_size)
    
    def compute(self, x):
-      z_vector = self.h_prev + x
+      z_vector = self.h_prev + [x]
       sigmoid_values = self.sigmoid_layer.calculate(z_vector, self.weights, self.biases)
       return use_vector_multiplication(self.c_prev, sigmoid_values)
    
