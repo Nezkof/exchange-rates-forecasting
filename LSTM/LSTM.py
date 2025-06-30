@@ -1,6 +1,6 @@
-from ForgetGate import ForgetGate
-from InputGate import InputGate
-from OutputGate import OutputGate
+from LSTM.ForgetGate import ForgetGate
+from LSTM.InputGate import InputGate
+from LSTM.OutputGate import OutputGate
 
 class LSTM: 
    def __init_gates(self):

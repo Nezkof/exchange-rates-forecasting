@@ -3,7 +3,7 @@ from helpers.useRandom import generateRandom, generateRandomValues
 
 class EvolutionalStrategy: 
    #  
-   def __init__(self, population_size, fitness_function, expected_output , bounds, dimensions = 2, mutation_rate=0.1, mutation_strength=0.1):
+   def __init__(self, population_size, fitness_function, expected_output , bounds, dimensions, mutation_rate=0.1, mutation_strength=0.1):
       self.populationSize = population_size if population_size % 2 == 0 else population_size + 1
       self.lstm = fitness_function
       self.expected_output = expected_output 
@@ -43,7 +43,7 @@ class EvolutionalStrategy:
 
       for individ in self.population:
          self.lstm.set_params(individ)
-         predictions = self.lstm.compute()  
+         predictions = self.lstm.fit()  
          error = sum((pred - real) ** 2 for pred, real in zip(predictions, self.expected_output)) / len(self.expected_output)
          self.populationErrors.append(error)
 
@@ -99,18 +99,15 @@ class EvolutionalStrategy:
 
    def optimize(self, precision):
       self.calcPopulationErrors()
-      prev_error = 9999999
       while(precision < self.populationErrors[0]):
          print(self.populationErrors[0])
-         prev_error = self.populationErrors[0]
          self.calcPopulationErrors()
          self.formNewPopulation()
          self.mutatePopulation()
          self.calcPopulationErrors()
          self.sortPopulationByError()
          self.selectNextPopulation()
-         # print(self.population[0])
-         # print(self.populationErrors[0])
+         print(self.populationErrors[0])
 
       return self.population[0]
 

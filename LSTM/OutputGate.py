@@ -1,4 +1,4 @@
-from FCL import FCL
+from LSTM.FCL import FCL
 
 from helpers.useFunctions import use_tanh, use_sigmoid
 from helpers.useMath import use_vector_multiplication
