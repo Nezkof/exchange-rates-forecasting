@@ -3,17 +3,17 @@ from helpers.useRandom import generateRandom, generateRandomValues
 
 class EvolutionalStrategy: 
    #  
-   def __init__(self, population_size, fitness_function, ff_table_value, bounds, dimensions = 2, mutation_rate=0.1, mutation_strength=0.1):
+   def __init__(self, population_size, fitness_function, expected_output , bounds, dimensions = 2, mutation_rate=0.1, mutation_strength=0.1):
       self.populationSize = population_size if population_size % 2 == 0 else population_size + 1
       self.lstm = fitness_function
-      self.ff_table_value = ff_table_value #ff = fitness function
+      self.expected_output = expected_output 
       self.bounds = bounds
       self.dimensions = dimensions 
       self.mutation_rate = mutation_rate
       self.mutation_strength = mutation_strength
 
       self.generatePopulation()
-      self.populationErrors = [999999999]
+      self.populationErrors = []
 
    def generateRandomParent(self):
       parent = []
@@ -43,8 +43,8 @@ class EvolutionalStrategy:
 
       for individ in self.population:
          self.lstm.set_params(individ)
-         fitnessValue = self.lstm.compute()
-         error = abs(fitnessValue - self.ff_table_value)
+         predictions = self.lstm.compute()  
+         error = sum((pred - real) ** 2 for pred, real in zip(predictions, self.expected_output)) / len(self.expected_output)
          self.populationErrors.append(error)
 
    def getParent(self, tournament_size=3):
@@ -98,8 +98,11 @@ class EvolutionalStrategy:
       # self.populationErrors = [self.populationErrors[i] for i in sorted_indices]
 
    def optimize(self, precision):
+      self.calcPopulationErrors()
+      prev_error = 9999999
       while(precision < self.populationErrors[0]):
          print(self.populationErrors[0])
+         prev_error = self.populationErrors[0]
          self.calcPopulationErrors()
          self.formNewPopulation()
          self.mutatePopulation()

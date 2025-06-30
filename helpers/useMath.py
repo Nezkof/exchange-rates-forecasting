@@ -1,13 +1,3 @@
-def use_linear_combination(arr1, arr2):
-   sums = []
-   arr1_half =int(len(arr1) / 2)
-   
-   for i in range(arr1_half):
-      sum = arr1[i] * arr2[i] + arr1[i + arr1_half] * arr2[i + arr1_half]
-      sums.append(sum)
-    
-   return sums
-
 def use_vector_sum(arr1, arr2):
    sums = []
 
