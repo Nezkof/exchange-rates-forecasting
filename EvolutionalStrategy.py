@@ -9,29 +9,32 @@ class EvolutionalStrategy:
          self, 
          population_size, 
          fitness_function, 
-         expected_output , 
+         expected_output, 
          bounds, 
          dimensions, 
+         parents_per_child,
+         children_per_parents,
+         similarity_coefficient,
+         tournament_size = 3,
          mutation_rate=0.1, 
-         mutation_strength=0.1, 
-         max_children_per_parent = 10,
-         children_multiplier = 3,
-         children_variation = 0.1
+         mutation_range=0.1, 
    ):
-      self.populationSize = population_size if population_size % 2 == 0 else population_size + 1
+      self.population_size = population_size if population_size % 2 == 0 else population_size + 1
       self.lstm = fitness_function
       self.expected_output = expected_output 
       self.bounds = bounds
       self.dimensions = dimensions 
+      self.parents_per_child = parents_per_child
+      self.children_per_parents = children_per_parents
+      self.similarity_coefficient = similarity_coefficient
+      self.tournament_size = tournament_size
+
       self.mutation_rate = mutation_rate
-      self.mutation_strength = mutation_strength
+      self.mutation_range = mutation_range
+      
       self.population = []
       self.population_errors = []
-      self.max_children_per_parent = max_children_per_parent
-      self.children_multiplier = children_multiplier
-      self.children_variation = children_variation
 
-      self.membership_function_args = []
 
    def __generate_random_parent(self):
       parent = []
@@ -52,74 +55,90 @@ class EvolutionalStrategy:
    def __generate_population(self):
       self.population = []
 
-      for i in range(self.populationSize):
+      for i in range(self.population_size):
          parent = self.__generate_random_parent()
          self.population.append(parent)
 
-   def __calculate_membership_function_args(self):
-      b = get_transition_points_distance(self.expected_output)
-      a = 4 * math.log(0.5) / b**2
-      self.membership_function_args = [a, self.expected_output]
+   def __mean_squared_error(self, predictions, targets):
+      return sum((p - t) ** 2 for p, t in zip(predictions, targets)) / len(targets)
 
-   # def __mean_squared_error(self, predictions, targets):
-   #    return sum((p - t) ** 2 for p, t in zip(predictions, targets)) / len(targets)
-
-   def __calc_population_errors(self):
+   def __calculate_population_errors(self):
       self.population_errors = []
 
       for individ in self.population:
-         # self.lstm.set_params(individ)
-         # predictions = self.lstm.fit()  
-         # error = self.__mean_squared_error(predictions, self.expected_output)
-         # self.population_errors.append(error)
-         prediction = self.lstm(individ)
-         error = abs(self.expected_output - prediction)
+         self.lstm.set_params(individ)
+         predictions = self.lstm.fit()  
+         error = self.__mean_squared_error(predictions, self.expected_output)
          self.population_errors.append(error)
+         # prediction = self.lstm(individ)
+         # error = abs(self.expected_output - prediction)
+         # self.population_errors.append(error)
+   
+   def __tournament_selection(self):
+      best_individual = None
+      smalles_error = float('inf')
 
-   def __calculate_children_number(self, error):
-      children_number = inverse_proportional(self.max_children_per_parent, error)
-      children_number = int(round(self.children_multiplier * children_number))
-      return max(1, children_number)
+      for _ in range(self.tournament_size):
+         random_index = random.randint(0, len(self.population) - 1)
+         error = self.population_errors[random_index]
 
-   def __generate_parent_children(self, i):
+         if error < smalles_error:
+               best_individual = self.population[random_index]
+               smalles_error = error
+
+      return best_individual
+
+   def __crossover_parents(self, parents):
+      child = []
+
+      for i in range(self.dimensions):
+         child_gene = 0
+         for parent in parents:
+            child_gene += parent[i]
+         child_gene = child_gene / len(parents)
+         child.append(child_gene)
+
+      return child
+
+   def __mutate_individ(self, child):
+      mutated = []
+      for gene in child:
+         noise = random.uniform(-self.similarity_coefficient, self.similarity_coefficient)
+         mutated.append(gene + noise)
+      return mutated
+
+   def __add_new_population(self):
       children = []
 
-      membership_func_belonging_degree = gauss(self.membership_function_args[0], self.membership_function_args[1], self.population_errors[i])
+      for _ in range(int(self.population_size / self.parents_per_child)):
+         parents = []
 
-      print(self.population_errors[i], membership_func_belonging_degree)
-
-      # N = self.__calculate_children_number(self.population_errors[i])
-      # parent = self.population[i]
-      
-      # for _ in range(N):
-      #    child = []
-      #    for x in range(self.dimensions):
-      #       mutation = random.gauss(0, self.children_variation)
-      #       child_arg = parent[x] + mutation
-      #       child.append(child_arg)
-      #    children.append(child)
-
-      return children
-
-   def __form_new_population(self):
-      children = []
-      
-      for i in range(len(self.population)):
-         parent_children = self.__generate_parent_children(i)
-         children.extend(parent_children)
+         for _ in range(self.parents_per_child):
+            parent = self.__tournament_selection()
+            parents.append(parent)
+         
+         for _ in range(self.children_per_parents):
+            child = self.__crossover_parents(parents)
+            child = self.__mutate_individ(child)
+            children.append(child)
 
       self.population.extend(children)
 
-   def __mutate_population(self):
+   def __add_mutated_population(self):
+      mutated_population = []
+
       for i in range(len(self.population)):
+         mutated_individ = self.population[i][:]  
          if random.random() < self.mutation_rate:
             for j in range(self.dimensions):
-               mutation = random.uniform(-self.mutation_strength, self.mutation_strength)
-               mutated_value = self.population[i][j] + mutation
-               self.population[i][j] = mutated_value
+                  noise = random.uniform(-self.mutation_range, self.mutation_range)
+                  mutated_individ[j] += noise  
+         mutated_population.append(mutated_individ)
+
+      self.population.extend(mutated_population)
 
    def __selectNextPopulation(self):
-      self.population = self.population[:self.populationSize]
+      self.population = self.population[:self.population_size]
 
    def __sort_population_by_error(self):
       combined = list(zip(self.population, self.population_errors))
@@ -135,13 +154,12 @@ class EvolutionalStrategy:
 
    def optimize(self, precision):
       self.__generate_population()
-      self.__calc_population_errors()
+      self.__calculate_population_errors()
 
       while(precision < self.population_errors[0]):
-         self.__calculate_membership_function_args()
-         self.__form_new_population()
-         self.__mutate_population()
-         self.__calc_population_errors()
+         self.__add_new_population()
+         self.__add_mutated_population()
+         self.__calculate_population_errors()
          self.__sort_population_by_error()
          self.__selectNextPopulation()
 

@@ -43,15 +43,21 @@ def test_LSTM():
    hidden_size = 6
    lstm = LSTM(normalized_train_data, hidden_size)
 
-   population_size = 50
    precision = 0.001 
    bounds = [-5, 5] 
    dimensions = (
       (((hidden_size + 1) * hidden_size) * 4 + hidden_size) + 
       (hidden_size * 4) + 1
    )
-   mutation_rate = 0.5
-   mutation_strength = 0.2
+
+   population_size = 1000
+   precision = 0.001 
+   parents_per_child = 2
+   children_per_parents = 7
+   tournament_size = 30
+   similarity_coefficient = 0.4
+   mutation_rate = 0.7
+   mutation_strength = 2
 
    evolutionalStrategy = EvolutionalStrategy(
       population_size, 
@@ -59,9 +65,12 @@ def test_LSTM():
       normalized_expected_output, 
       bounds, 
       dimensions, 
+      parents_per_child, 
+      children_per_parents,
+      similarity_coefficient,
+      tournament_size,
       mutation_rate, 
-      mutation_strength
-   )
+      mutation_strength)
 
    params = evolutionalStrategy.optimize(precision)
    lstm.set_params(params)
@@ -102,14 +111,29 @@ def test_evolutional_algorithm():
       [8.05502, 9.66459]
    ]
 
-   population_size = 100
+   population_size = 1000
    precision = 0.001 
-   mutation_rate = 0.3
-   mutation_strength = 0.9
+   parents_per_child = 2
+   children_per_parents = 7
+   tournament_size = 3
+   similarity_coefficient = 0.2
+   mutation_rate = 0.7
+   mutation_strength = 5
 
    results = []
 
-   evolutionalStrategy = EvolutionalStrategy(population_size, fitness_functions[0], expected_outputs[0], bounds[0], dimensions[0], mutation_rate, mutation_strength)
+   evolutionalStrategy = EvolutionalStrategy(
+      population_size, 
+      fitness_functions[0], 
+      expected_outputs[0], 
+      bounds[0], 
+      dimensions[0], 
+      parents_per_child, 
+      children_per_parents,
+      similarity_coefficient,
+      tournament_size,
+      mutation_rate, 
+      mutation_strength)
 
    for i in range(len(fitness_functions)):
       evolutionalStrategy.set_fitness_function(fitness_functions[i])
@@ -123,8 +147,8 @@ def test_evolutional_algorithm():
       print(fitness_functions[i](results[i]), fitness_functions[i](expected_args[i]))
 
 def main():
-   # test_LSTM() 
-   test_evolutional_algorithm()
+   test_LSTM() 
+   # test_evolutional_algorithm()
 
 if __name__ == "__main__":
     main()
