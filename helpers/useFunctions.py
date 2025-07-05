@@ -34,3 +34,7 @@ def gauss(a, c, x):
    if exponent < -700 or exponent > 700:   
       return 0.0
    return math.exp(exponent)
+
+def parabola(x):
+   # return x**2
+   return x

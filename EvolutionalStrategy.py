@@ -1,8 +1,6 @@
 import math
 import random
-from helpers.useRandom import generateRandom, generateRandomValues
-from helpers.useFunctions import inverse_proportional, gauss
-from helpers.useFuzzyLogic import get_transition_points_distance
+from helpers.useRandom import generateRandom
 
 class EvolutionalStrategy:  
    def __init__(
@@ -164,6 +162,7 @@ class EvolutionalStrategy:
          self.__selectNextPopulation()
 
          print(self.population_errors[0])
+         # print(self.population[0])
 
       return self.population[0]
 

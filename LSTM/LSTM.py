@@ -108,4 +108,4 @@ class LSTM:
 
       predicted_value = self.dense_gate.compute(self.h_prev)
 
-      return predicted_value
+      return predicted_value[0]
