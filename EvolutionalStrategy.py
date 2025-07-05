@@ -5,6 +5,7 @@ from helpers.useRandom import generateRandom
 class EvolutionalStrategy:  
    def __init__(
          self, 
+         max_epochs,
          population_size, 
          fitness_function, 
          expected_output, 
@@ -13,10 +14,13 @@ class EvolutionalStrategy:
          parents_per_child,
          children_per_parents,
          similarity_coefficient,
-         tournament_size = 3,
-         mutation_rate=0.1, 
-         mutation_range=0.1, 
+         tournament_size,
+         mutation_rate, 
+         mutation_range, 
+         mutation_fade_speed,
+         similarity_coefficient_fade_speed
    ):
+      self.max_epochs = max_epochs
       self.population_size = population_size if population_size % 2 == 0 else population_size + 1
       self.lstm = fitness_function
       self.expected_output = expected_output 
@@ -29,6 +33,8 @@ class EvolutionalStrategy:
 
       self.mutation_rate = mutation_rate
       self.mutation_range = mutation_range
+      self.mutation_fade_speed = mutation_fade_speed
+      self.similarity_coefficient_fade_speed = similarity_coefficient_fade_speed 
       
       self.population = []
       self.population_errors = []
@@ -150,21 +156,28 @@ class EvolutionalStrategy:
       # self.population = [self.population[i] for i in sorted_indices]
       # self.population_errors = [self.population_errors[i] for i in sorted_indices]
 
+   def __correct_coefs(self):
+      self.mutation_range = self.mutation_range * self.mutation_fade_speed
+      self.similarity_coefficient = self.similarity_coefficient * self.similarity_coefficient_fade_speed
+
    def optimize(self, precision):
       self.__generate_population()
       self.__calculate_population_errors()
 
-      while(precision < self.population_errors[0]):
+      epoch = 0
+      while(precision < self.population_errors[0] and epoch < self.max_epochs):
          self.__add_new_population()
          self.__add_mutated_population()
          self.__calculate_population_errors()
          self.__sort_population_by_error()
          self.__selectNextPopulation()
 
-         print(self.population_errors[0])
-         # print(self.population[0])
+         print("Epoch #", epoch, self.population_errors[0], self.mutation_range, self.similarity_coefficient)
 
-      return self.population[0]
+         self.__correct_coefs()
+         epoch += 1
+
+      return self.population[0], self.population_errors[0], epoch
 
    def set_fitness_function(self, fitness_function):
       self.lstm = fitness_function

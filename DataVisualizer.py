@@ -29,9 +29,6 @@ class DataVisualizer:
       train_x = range(self.features_number, self.features_number + self.train_length)
       control_x = range(self.train_length + self.features_number, self.features_number + self.train_length + self.control_length)
 
-      print(train_x)
-      print(control_x)
-
       plt.plot(train_x, self.train_results, marker='X', color=self.train_results_color, label='Train Results')
       plt.plot(train_x, self.expected_train_results, marker='o', color=self.expected_train_results_color, label='Expected Train Results')
       plt.plot(control_x, self.control_results, marker='X', color=self.control_results_color, label='Control Results')

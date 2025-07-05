@@ -36,8 +36,6 @@ class DataProcessor:
       self.train_data = data_table[:self.train_length]
       self.control_data = data_table[self.train_length:]
 
-      print(len(data_table))
-
       return data_table
    
    def __normalize_data(self, data):
