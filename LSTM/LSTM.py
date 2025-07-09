@@ -1,65 +1,60 @@
+import numpy as np
+from LSTM.LossLayer import LossLayer
 from LSTM.ForgetGate import ForgetGate
 from LSTM.InputGate import InputGate
 from LSTM.OutputGate import OutputGate
-from LSTM.DenseGate import DenseGate
 
 class LSTM: 
-   def __init_gates(self):
-      self.forget_gate = ForgetGate(self.hidden_size)
-      self.input_gate = InputGate(self.hidden_size)
-      self.output_gate = OutputGate(self.hidden_size)
-      self.dense_gate = DenseGate()
-
-   def __set_weights(self, weights): # [forget_w, input_s_w, input_t_w, output_w, dense_w]
-      self.forget_gate.set_weights(weights[0])
-      self.input_gate.set_sigmoid_weights(weights[1])
-      self.input_gate.set_tanh_weights(weights[2])
-      self.output_gate.set_weights(weights[3])
-      self.dense_gate.set_weights(weights[4])
-   
-   def __set_biases(self, biases): # [forget_b, input_s_b, input_t_b, output_b, dense_b]
-      self.forget_gate.set_biases(biases[0])
-      self.input_gate.set_sigmoid_biases(biases[1])
-      self.input_gate.set_tanh_biases(biases[2])
-      self.output_gate.set_biases(biases[3])
-      self.dense_gate.set_biases(biases[4])
-
-   def __struct_params(self, vector, elements_per_subvector):
-      gate1 = vector[0 : elements_per_subvector]
-      gate2 = vector[elements_per_subvector : 2 * elements_per_subvector]
-      gate3 = vector[2 * elements_per_subvector : 3 * elements_per_subvector]
-      gate4 = vector[3 * elements_per_subvector : 4 * elements_per_subvector]
-      dense = vector[4 * elements_per_subvector : ]  
-
-      return [gate1, gate2, gate3, gate4, dense]
-
-   def __split_params(self, params):
-      weights_per_gate = (self.hidden_size + self.features_number) * self.hidden_size
-      weights_for_dense_gate = self.hidden_size
-      split_index = weights_per_gate * 4 + weights_for_dense_gate
-
-      weights_vector = params[:split_index]
-      weights_vector = self.__struct_params(weights_vector, weights_per_gate)
-
-      biases_vector = params[split_index:]
-      biases_vector = self.__struct_params(biases_vector, self.hidden_size)
-
-      return [weights_vector, biases_vector]
-
-   def __init__(self, train_sequences, hidden_size):
-      self.train_sequences = train_sequences
+   def __init__(self, hidden_size, features_number):      
       self.hidden_size = hidden_size
-      self.features_number = 1
+      self.features_number = features_number
 
-      self.c_prev = [0] * hidden_size
-      self.h_prev = [0] * hidden_size
+      self.forget_gate = ForgetGate(self.hidden_size, self.features_number)
+      self.input_gate = InputGate(self.hidden_size, self.features_number)
+      self.output_gate = OutputGate(self.hidden_size, self.features_number)
+      self.loss_layer = LossLayer()
 
-      self.__init_gates()
+   def __backward(self, h_derivative, c_derivative):
+      ds = self.output_gate.get_o_output() * h_derivative + c_derivative
+      do = self.c_output * h_derivative
+      di = self.input_gate.get_c_output() * ds
+      dg = self.input_gate.get_i_output() * ds
+      df = self.c_prev * ds
+      
+      print("hello")
 
-   def set_params(self, params): # [ w1, w2, ... wn, b1, b2, ... bm ]
-      params = self.__split_params(params)
-      self.__set_weights(params[0])
-      self.__set_biases(params[1])
+
+   def __calculate_loss(self, cells_output, control_sequence):
+      idx = len(control_sequence) - 1
+
+      loss = self.loss_layer.calculate_loss(cells_output[idx], control_sequence[idx])
+      h_derivative = self.loss_layer.calculate_derivative(cells_output[idx], control_sequence[idx])
+      c_derivative = np.zeros(self.hidden_size)
+
+      self.__backward(h_derivative, c_derivative)
+
+
+   def forward(self, train_sequences, control_sequence):
+      self.c_prev = None
+      self.c_output = None
+      h_output = None
+      cells_output = []
+      for row in train_sequences:
+         if (self.c_output is not None): 
+            self.c_prev = self.c_output
+         self.c_output, f_output = self.forget_gate.forward(row, self.c_output, h_output)
+         i_output, c_tilda_output = self.input_gate.forward(row, h_output)
+         o_output = self.output_gate.forward(row, h_output)
+
+         self.c_output = c_tilda_output * i_output + self.c_output * f_output
+         h_output = self.c_output * o_output
+         
+         cells_output.append(h_output)
+
+      
+      loss = self.__calculate_loss(cells_output, control_sequence)
+
+
 
    def fit(self):
       predicted_values = []

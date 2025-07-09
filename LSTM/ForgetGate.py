@@ -1,27 +1,36 @@
-from LSTM.FCL import FCL
+import numpy as np
 
-from helpers.useFunctions import use_sigmoid
-from helpers.useMath import use_vector_multiplication
+from helpers.useFunctions import sigmoid
+
+from helpers.useRandom import random_array
 
 class ForgetGate: 
-   def __init__(self, hidden_size):
+   def __init__(self, hidden_size, features_number):
+      np.random.seed(0)
+      
       self.hidden_size = hidden_size
-      self.sigmoid_layer = FCL(use_sigmoid, hidden_size)
-   
-   def compute(self, x):
-      z_vector = self.h_prev + [x]
-      sigmoid_values = self.sigmoid_layer.calculate(z_vector, self.weights, self.biases)
-      return use_vector_multiplication(self.c_prev, sigmoid_values)
-   
-   def set_biases(self, biases):
-      self.biases = biases
-   
-   def set_weights(self, weights):
-      self.weights = weights
-   
-   def set_c_prev(self, c_prev):
-      self.c_prev = c_prev
-   
-   def set_h_prev(self, h_prev):
-      self.h_prev = h_prev
+      
+      hx_length = hidden_size + features_number
+      self.f_weights = random_array(-0.1, 0.1, hidden_size, hx_length)
+      self.f_biases = random_array(-0.1, 0.1, hidden_size)
+      self.f_weights_derivative = np.zeros((hidden_size,hx_length))
+      self.f_biases_derivative = np.zeros(hidden_size)
+
+      self.c_prev = np.zeros(hidden_size)
+      self.h_prev = np.zeros(hidden_size)
+      self.xc = []
+      
+      self.f_output = []
+
+   def forward(self, x, c_prev = None, h_prev = None):
+      if (c_prev is not None and h_prev is not None):
+         self.c_prev = c_prev
+         self.h_prev = h_prev
+      
+      self.xc = np.hstack((x, self.h_prev))
+      self.f_output = sigmoid(np.dot(self.f_weights, self.xc) + self.f_biases)
+      return self.c_prev, self.f_output
+      
+
+      
 

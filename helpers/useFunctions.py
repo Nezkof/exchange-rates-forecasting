@@ -1,14 +1,14 @@
 import math
 import numpy as np
 
-def use_sigmoid(x):
-    return float(1 / (1 + np.exp(-x)))
+def sigmoid(x):
+   return 1.0 / (1 + np.exp(-x))
 
-def use_tanh(x):
-    return float(np.tanh(x))
+def tanh(x):
+   return np.tanh(x)
 
-def use_identity(x):
-    return x
+def identity(x):
+   return x
 
 def rastrigin(x):
    A = 10

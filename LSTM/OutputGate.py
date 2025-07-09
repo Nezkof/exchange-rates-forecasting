@@ -1,28 +1,37 @@
-from LSTM.FCL import FCL
+import numpy as np
 
-from helpers.useFunctions import use_tanh, use_sigmoid
+from helpers.useFunctions import sigmoid, tanh
 from helpers.useMath import use_vector_multiplication
+from helpers.useRandom import random_array
 
 class OutputGate:
-   def __init__(self, hidden_size):
+   def __init__(self, hidden_size, features_number):
+      np.random.seed(0)
+      
       self.hidden_size = hidden_size
-      self.sigmoid_layer = FCL(use_sigmoid, hidden_size)
+      hx_length = hidden_size + features_number
 
-   def compute(self, x):
-      z_vector = self.h_prev + [x]
-      tanh_c_values = [use_tanh(x) for x in self.c_prev]
-      sigmoid_values = self.sigmoid_layer.calculate(z_vector, self.weights, self.biases)
+      self.o_weights = random_array(-0.1, 0.1, hidden_size, hx_length)
+      self.o_biases = random_array(-0.1, 0.1, hidden_size)
+      self.o_weights_derivative = np.zeros((hidden_size,hx_length))
+      self.o_biases_derivative = np.zeros(hidden_size)
 
-      return [ self.c_prev, use_vector_multiplication(tanh_c_values,sigmoid_values) ]
+      self.c_prev = np.zeros(hidden_size)
+      self.h_prev = np.zeros(hidden_size)
+      self.xc = []
+
+
+   def forward(self, x,  h_prev = None):
+      if (h_prev is not None):
+         self.h_prev = h_prev
+
+      self.xc = np.hstack((x, self.h_prev))
+      self.o_output = sigmoid(np.dot(self.o_weights, self.xc) + self.o_biases)
+
+      return self.o_output
+
+   def get_o_output(self):
+      return self.o_output
    
-   def set_biases(self, bias):
-      self.biases = bias 
-   
-   def set_weights(self, weight):
-      self.weights = weight   
-   
-   def set_c_prev(self, c_prev):
-      self.c_prev = c_prev 
-   
-   def set_h_prev(self, h_prev):
-      self.h_prev = h_prev 
+   def get_c_prev(self):
+      return self.c_prev
