@@ -2,6 +2,7 @@ from datetime import datetime
 import math
 import time
 from DataVisualizer import DataVisualizer
+from LSTM.DenseGate import DenseGate
 from LSTM.LSTM import LSTM
 from EvolutionalStrategy import EvolutionalStrategy
 from DataProcessor import DataProcessor
@@ -11,27 +12,29 @@ from helpers.useFunctions import rastrigin, styblinski_tang, holder_table, parab
 
 def test_LSTM():
    function = math.sin
-   features_number = 3
-   train_length = 20
-   control_length = 10
-   dataProcessor = DataProcessor(function, features_number, train_length, control_length)
-   dataProcessor.form_data_table()
+   features_number = 5
+   data_length = 100
+   train_length_coef = 0.8
+   train_length = int(data_length * train_length_coef)
+   control_length = data_length - train_length
+   dataProcessor = DataProcessor(function, features_number, data_length, train_length_coef)
+   dataProcessor.form_data_from_file()
    train_sequences, expected_train_results, control_sequences, expected_control_results = dataProcessor.split_data_table()
 
-   hidden_size = 6
-   max_epochs = 1000
+   hidden_size = 64
+   max_epochs = 200
    bounds = [-1, 1] 
    dimensions = ( (((hidden_size + 1) * hidden_size) * 4 + hidden_size) + (hidden_size * 4) + 1)
-   population_size = 50
+   population_size = 100
    precision = 0.0001
    parents_per_child = 2
    children_per_parents = 6
-   tournament_size = 4
+   tournament_size = 10
    similarity_coefficient = 0.1
    mutation_rate = 0.7
-   mutation_strength = 0.2
-   mutation_fade_speed = 0.995
-   similarity_coefficient_fade_speed = 1
+   mutation_strength = 0.4
+   mutation_fade_speed = 0.8
+   similarity_coefficient_fade_speed = 0.9
    
    lstm = LSTM(train_sequences, hidden_size)
    evolutionalStrategy = EvolutionalStrategy(
@@ -63,8 +66,8 @@ def test_LSTM():
    
    std_control_error = std_control_error / len(denormalized_control_results)
 
-   for i in range(len(denormalized_control_results)):
-      print(denormalized_control_results[i], "|", denormalized_expected_control_results[i])
+   # for i in range(len(denormalized_control_results)):
+      # print(denormalized_control_results[i], "|", denormalized_expected_control_results[i])
 
    logger = XLSLogger()
    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -82,8 +85,6 @@ def test_LSTM():
    dataVisualizer.set_exprected_control_results(denormalized_expected_control_results, 'pink')
 
    dataVisualizer.build_plot()
-
-
 
 def test_evolutional_algorithm():
    fitness_functions = [
@@ -154,4 +155,4 @@ def main():
    # test_evolutional_algorithm()
 
 if __name__ == "__main__":
-    main()
+   main()

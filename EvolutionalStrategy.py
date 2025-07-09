@@ -39,7 +39,6 @@ class EvolutionalStrategy:
       self.population = []
       self.population_errors = []
 
-
    def __generate_random_parent(self):
       parent = []
       for j in range(self.dimensions):
