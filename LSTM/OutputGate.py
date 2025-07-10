@@ -20,6 +20,19 @@ class OutputGate:
       self.h_prev = np.zeros(hidden_size)
       self.xc = []
 
+   def backward(self, derivative_o_output, do ,learning_rate):
+      do_input = derivative_o_output * do
+      self.o_weights_derivative += np.outer(do_input, self.xc)
+      self.o_biases_derivative += do_input
+      dxc = np.dot(self.o_weights.T, do_input)
+
+      self.o_weights -= learning_rate * self.o_weights_derivative
+      self.o_biases -= learning_rate * self.o_biases_derivative
+
+      self.o_weights_derivative = np.zeros_like(self.o_weights) 
+      self.o_biases_derivative = np.zeros_like(self.o_biases)  
+
+      return dxc
 
    def forward(self, x,  h_prev = None):
       if (h_prev is not None):

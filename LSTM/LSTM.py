@@ -1,59 +1,45 @@
 import numpy as np
-from LSTM.LossLayer import LossLayer
-from LSTM.ForgetGate import ForgetGate
-from LSTM.InputGate import InputGate
-from LSTM.OutputGate import OutputGate
+from LSTM.LSTMGate import LSTMGate
+from helpers.useFunctions import sigmoid_derivative, tanh_derivative
 
 class LSTM: 
-   def __init__(self, hidden_size, features_number):      
+   def __init__(self, hidden_size, features_number, learning_rate, nodes_amount):      
       self.hidden_size = hidden_size
       self.features_number = features_number
+      self.learning_rate = learning_rate
+      self.nodes = [LSTMGate(hidden_size, features_number) for _ in range(nodes_amount)]
 
-      self.forget_gate = ForgetGate(self.hidden_size, self.features_number)
-      self.input_gate = InputGate(self.hidden_size, self.features_number)
-      self.output_gate = OutputGate(self.hidden_size, self.features_number)
-      self.loss_layer = LossLayer()
-
-   def __backward(self, h_derivative, c_derivative):
-      ds = self.output_gate.get_o_output() * h_derivative + c_derivative
-      do = self.c_output * h_derivative
-      di = self.input_gate.get_c_output() * ds
-      dg = self.input_gate.get_i_output() * ds
-      df = self.c_prev * ds
-      
-      print("hello")
-
-
-   def __calculate_loss(self, cells_output, control_sequence):
+   def __calculate_loss(self, control_sequence):
       idx = len(control_sequence) - 1
 
-      loss = self.loss_layer.calculate_loss(cells_output[idx], control_sequence[idx])
-      h_derivative = self.loss_layer.calculate_derivative(cells_output[idx], control_sequence[idx])
+      loss = self.nodes[idx].calculate_loss(control_sequence[idx])
+      h_derivative = self.nodes[idx].calculate_loss_derivative(control_sequence[idx])
       c_derivative = np.zeros(self.hidden_size)
 
-      self.__backward(h_derivative, c_derivative)
+      self.nodes[idx].backward(h_derivative, c_derivative, self.features_number, self.learning_rate)
+      idx -= 1
 
-
-   def forward(self, train_sequences, control_sequence):
-      self.c_prev = None
-      self.c_output = None
-      h_output = None
-      cells_output = []
-      for row in train_sequences:
-         if (self.c_output is not None): 
-            self.c_prev = self.c_output
-         self.c_output, f_output = self.forget_gate.forward(row, self.c_output, h_output)
-         i_output, c_tilda_output = self.input_gate.forward(row, h_output)
-         o_output = self.output_gate.forward(row, h_output)
-
-         self.c_output = c_tilda_output * i_output + self.c_output * f_output
-         h_output = self.c_output * o_output
-         
-         cells_output.append(h_output)
-
+      while idx >= 0:
+         loss += self.nodes[idx].calculate_loss(control_sequence[idx])
+         h_derivative = self.nodes[idx].calculate_loss_derivative(control_sequence[idx])
+         h_derivative += self.nodes[idx+1].get_bottom_diff_h()
+         c_derivative = self.nodes[idx+1].get_bottom_diff_s()
+         self.nodes[idx].backward(h_derivative, c_derivative, self.features_number, self.learning_rate)
+         idx -= 1 
       
-      loss = self.__calculate_loss(cells_output, control_sequence)
+      return loss
+   
+   def forward(self, train_sequences, control_sequence):
+      c_prev = None
+      h_prev = None
 
+      for i in range(len(self.nodes)):
+         c_prev, h_prev = self.nodes[i].forward(train_sequences[i], c_prev, h_prev)
+         
+      print("y_pred = [" + ", ".join(["% 2.5f" % self.nodes[idx].get_h_output()[0] for idx in range(len(self.nodes))]) + "]", end=", ")
+      
+      loss = self.__calculate_loss(control_sequence)
+      print("loss:", "%.3e" % loss)
 
 
    def fit(self):

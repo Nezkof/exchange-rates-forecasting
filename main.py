@@ -162,6 +162,8 @@ def test_new_LSTM():
 # LSTM settings
    hidden_size = 100
    features_number = 50 
+   learning_rate = 0.1
+   nodes_amount = 4
 
 # Data forming
    # processor = DataProcessor(function, features_number, data_length, train_length_coef)
@@ -207,8 +209,9 @@ def test_new_LSTM():
        0.36858461, 0.13690027, 0.82211773, 0.18984791, 0.51131898,
        0.22431703, 0.09784448, 0.86219152, 0.97291949, 0.96083466])]
 
-   lstm = LSTM(hidden_size,features_number)
-   lstm.forward(input_val_arr, y_list)
+   lstm = LSTM(hidden_size,features_number, learning_rate, nodes_amount)
+   for _ in range(100):
+      lstm.forward(input_val_arr, y_list)
 
    # train_results = lstm.fit()
 
