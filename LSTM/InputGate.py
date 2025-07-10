@@ -4,10 +4,11 @@ from helpers.useFunctions import sigmoid, tanh
 from helpers.useRandom import random_array
 
 class InputGate:
-   def __init__(self, hidden_size, features_number):
+   def __init__(self, hidden_size, features_number, learning_rate):
       np.random.seed(0)
       
       self.hidden_size = hidden_size
+      self.learning_rate = learning_rate
       hx_length = hidden_size + features_number
 
       self.i_weights = random_array(-0.1, 0.1, hidden_size, hx_length)
@@ -24,7 +25,7 @@ class InputGate:
       self.h_prev = np.zeros(hidden_size)
       self.xc = []
 
-   def backward(self, derivative_i_output, derivative_c_tilda_output, di, dg, learning_rate):
+   def backward(self, derivative_i_output, derivative_c_tilda_output, di, dg):
       di_input = derivative_i_output * di
       d_c_tilda_input = derivative_c_tilda_output * dg
       self.i_weights_derivative += np.outer(di_input, self.xc)
@@ -36,10 +37,10 @@ class InputGate:
       self.i_biases_derivative += di_input
       self.c_biases_derivative += d_c_tilda_input
 
-      self.c_weights -= learning_rate * self.c_weights_derivative
-      self.i_weights -= learning_rate * self.i_weights_derivative
-      self.c_biases -= learning_rate * self.c_biases_derivative
-      self.i_biases -= learning_rate * self.i_biases_derivative
+      self.c_weights -= self.learning_rate * self.c_weights_derivative
+      self.i_weights -= self.learning_rate * self.i_weights_derivative
+      self.c_biases -= self.learning_rate * self.c_biases_derivative
+      self.i_biases -= self.learning_rate * self.i_biases_derivative
 
       self.c_weights_derivative = np.zeros_like(self.c_weights)
       self.i_weights_derivative = np.zeros_like(self.i_weights)

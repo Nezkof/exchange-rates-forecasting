@@ -5,10 +5,11 @@ from helpers.useFunctions import sigmoid
 from helpers.useRandom import random_array
 
 class ForgetGate: 
-   def __init__(self, hidden_size, features_number):
+   def __init__(self, hidden_size, features_number, learning_rate):
       np.random.seed(0)
       
       self.hidden_size = hidden_size
+      self.learning_rate = learning_rate
       
       hx_length = hidden_size + features_number
       self.f_weights = random_array(-0.1, 0.1, hidden_size, hx_length)
@@ -22,14 +23,14 @@ class ForgetGate:
       
       self.f_output = []
 
-   def backward(self, derivative_f_output, df ,learning_rate):
+   def backward(self, derivative_f_output, df):
       df_input = derivative_f_output * df
       self.f_weights_derivative += np.outer(df_input, self.xc)
       self.f_biases_derivative += df_input 
       dxc = np.dot(self.f_weights.T, df_input)
 
-      self.f_weights -= learning_rate * self.f_weights_derivative
-      self.f_biases -= learning_rate * self.f_biases_derivative
+      self.f_weights -= self.learning_rate * self.f_weights_derivative
+      self.f_biases -= self.learning_rate * self.f_biases_derivative
 
       self.f_weights_derivative = np.zeros_like(self.f_weights) 
       self.f_biases_derivative = np.zeros_like(self.f_biases) 

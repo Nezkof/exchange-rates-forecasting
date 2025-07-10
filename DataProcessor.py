@@ -67,6 +67,7 @@ class DataProcessor:
       self.control_data = (X[self.train_length:], y[self.train_length:])
 
    def denormalize(self, normalized_array):
+      normalized_array = np.array(normalized_array) 
       return normalized_array * self.std + self.mean
 
    def split_data_table(self):

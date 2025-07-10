@@ -5,10 +5,11 @@ from helpers.useMath import use_vector_multiplication
 from helpers.useRandom import random_array
 
 class OutputGate:
-   def __init__(self, hidden_size, features_number):
+   def __init__(self, hidden_size, features_number, learning_rate):
       np.random.seed(0)
       
       self.hidden_size = hidden_size
+      self.learning_rate = learning_rate
       hx_length = hidden_size + features_number
 
       self.o_weights = random_array(-0.1, 0.1, hidden_size, hx_length)
@@ -20,14 +21,14 @@ class OutputGate:
       self.h_prev = np.zeros(hidden_size)
       self.xc = []
 
-   def backward(self, derivative_o_output, do ,learning_rate):
+   def backward(self, derivative_o_output, do):
       do_input = derivative_o_output * do
       self.o_weights_derivative += np.outer(do_input, self.xc)
       self.o_biases_derivative += do_input
       dxc = np.dot(self.o_weights.T, do_input)
 
-      self.o_weights -= learning_rate * self.o_weights_derivative
-      self.o_biases -= learning_rate * self.o_biases_derivative
+      self.o_weights -= self.learning_rate * self.o_weights_derivative
+      self.o_biases -= self.learning_rate * self.o_biases_derivative
 
       self.o_weights_derivative = np.zeros_like(self.o_weights) 
       self.o_biases_derivative = np.zeros_like(self.o_biases)  
