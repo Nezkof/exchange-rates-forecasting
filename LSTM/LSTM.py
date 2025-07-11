@@ -1,13 +1,18 @@
 import os
 import numpy as np
 from LSTM.LSTMGate import LSTMGate
+from LSTM.LSTMParameters import LSTMParameters
 from helpers.useFunctions import sigmoid_derivative, tanh_derivative
 
 class LSTM: 
    def __init__(self, hidden_size, features_number, learning_rate, nodes_amount):      
       self.hidden_size = hidden_size
       self.features_number = features_number
-      self.nodes = [LSTMGate(self.hidden_size, self.features_number, learning_rate) for _ in range(nodes_amount)]
+      self.lstm_parameters = LSTMParameters(hidden_size, features_number, learning_rate)
+      self.nodes = [LSTMGate(self.lstm_parameters, self.hidden_size, self.features_number, learning_rate) for _ in range(nodes_amount)]
+
+   def __update_coefficients(self):
+      self.lstm_parameters.update_parameters()
 
    def __calculate_loss(self, control_sequence):
       idx = len(control_sequence) - 1
@@ -44,6 +49,7 @@ class LSTM:
       while epoch < epochs and loss > precision:
          output = self.__forward(train_sequences)
          loss = self.__calculate_loss(control_sequence)
+         self.__update_coefficients()
          
          clear = lambda: os.system('cls')
          clear()

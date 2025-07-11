@@ -1,21 +1,13 @@
 import numpy as np
 
 from helpers.useFunctions import sigmoid
-
-from helpers.useRandom import random_array
-
 class ForgetGate: 
-   def __init__(self, hidden_size, features_number, learning_rate):
+   def __init__(self, parameters, hidden_size, features_number, learning_rate):
       np.random.seed(0)
       
       self.hidden_size = hidden_size
       self.learning_rate = learning_rate
-      
-      hx_length = hidden_size + features_number
-      self.f_weights = random_array(-0.1, 0.1, hidden_size, hx_length)
-      self.f_biases = random_array(-0.1, 0.1, hidden_size)
-      self.f_weights_derivative = np.zeros((hidden_size,hx_length))
-      self.f_biases_derivative = np.zeros(hidden_size)
+      self.parameters = parameters
 
       self.c_prev = np.zeros(hidden_size)
       self.h_prev = np.zeros(hidden_size)
@@ -25,15 +17,9 @@ class ForgetGate:
 
    def backward(self, derivative_f_output, df):
       df_input = derivative_f_output * df
-      self.f_weights_derivative += np.outer(df_input, self.xc)
-      self.f_biases_derivative += df_input 
-      dxc = np.dot(self.f_weights.T, df_input)
-
-      self.f_weights -= self.learning_rate * self.f_weights_derivative
-      self.f_biases -= self.learning_rate * self.f_biases_derivative
-
-      self.f_weights_derivative = np.zeros_like(self.f_weights) 
-      self.f_biases_derivative = np.zeros_like(self.f_biases) 
+      self.parameters.increase_f_weights_derivatives(np.outer(df_input, self.xc))
+      self.parameters.increase_f_biases_derivatives(df_input)
+      dxc = np.dot(self.parameters.get_f_weights().T, df_input)
 
       return dxc
 
@@ -43,7 +29,7 @@ class ForgetGate:
          self.h_prev = h_prev
       
       self.xc = np.hstack((x, self.h_prev))
-      self.f_output = sigmoid(np.dot(self.f_weights, self.xc) + self.f_biases)
+      self.f_output = sigmoid(np.dot(self.parameters.get_f_weights(), self.xc) + self.parameters.get_f_biases())
       return self.c_prev, self.f_output
       
 

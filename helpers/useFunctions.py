@@ -2,7 +2,8 @@ import math
 import numpy as np
 
 def sigmoid(x):
-   return 1.0 / (1 + np.exp(-x))
+   x = np.clip(x, -500, 500)  
+   return 1.0 / (1.0 + np.exp(-x))
 
 def sigmoid_derivative(x): 
    return x*(1-x)
@@ -22,7 +23,7 @@ def rastrigin(x):
    return A * n + sum([(xi**2 - A * math.cos(2 * math.pi * xi)) for xi in x])
 
 def styblinski_tang(x):
-   return 0.5 * sum([xi**4 - 16*xi**2 + 5*xi for xi in x])
+   return 0.1 * sum([xi**4 - 16*xi**2 + 5*xi for xi in x])
 
 def holder_table(x_array):
    x = x_array[0]

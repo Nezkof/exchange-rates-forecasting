@@ -1,3 +1,4 @@
+import numpy as np
 from LSTM.ForgetGate import ForgetGate
 from LSTM.InputGate import InputGate
 from LSTM.LossLayer import LossLayer
@@ -6,10 +7,10 @@ from helpers.useFunctions import sigmoid_derivative, tanh_derivative
 
 
 class LSTMGate:
-   def __init__(self, hidden_size, features_number, learning_rate):
-      self.forget_gate = ForgetGate(hidden_size, features_number, learning_rate)
-      self.input_gate = InputGate(hidden_size, features_number, learning_rate)
-      self.output_gate = OutputGate(hidden_size, features_number, learning_rate)
+   def __init__(self, parameters, hidden_size, features_number, learning_rate):
+      self.forget_gate = ForgetGate(parameters, hidden_size, features_number, learning_rate)
+      self.input_gate = InputGate(parameters, hidden_size, features_number, learning_rate)
+      self.output_gate = OutputGate(parameters, hidden_size, features_number, learning_rate)
       self.loss_layer = LossLayer()
 
       self.features_number = features_number
@@ -20,14 +21,16 @@ class LSTMGate:
       self.loss = 0
       self.c_prev_grad = 0
       self.h_prev_grad = 0
+      self.c_prev = None
    
    def forward(self, row, c_prev, h_prev):
-      c_prev, f_output = self.forget_gate.forward(row, c_prev, h_prev)
+      self.c_prev, f_output = self.forget_gate.forward(row, c_prev, h_prev)
       i_output, c_tilda_output = self.input_gate.forward(row, h_prev)
       o_output = self.output_gate.forward(row, h_prev)
 
-      self.c_output = c_tilda_output * i_output + c_prev * f_output
-      self.h_output = self.c_output * o_output
+      self.c_output = c_tilda_output * i_output + self.c_prev * f_output
+      self.h_output = np.tanh(self.c_output) * o_output
+      # self.h_output = self.c_output * o_output
       
       return self.c_output, self.h_output
    
@@ -36,7 +39,7 @@ class LSTMGate:
       do = self.c_output * h_derivative
       di = self.input_gate.get_c_output() * ds
       dg = self.input_gate.get_i_output() * ds
-      df = self.c_output * ds
+      df = self.c_prev * ds
 
       dxc = self.forget_gate.backward(sigmoid_derivative(self.forget_gate.get_f_output()), df)
       dxc += self.input_gate.backward(sigmoid_derivative(self.input_gate.get_i_output()), tanh_derivative(self.input_gate.get_c_output()),di, dg)
