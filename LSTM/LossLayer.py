@@ -1,16 +1,8 @@
 import numpy as np
 
-
 class LossLayer:
-   np.random.seed(0)
+   def calculate_loss(self, y_out, target):
+      return 0.5 * np.sum((y_out - target) ** 2)
 
-   def __init__(self):
-      pass
-
-   def calculate_loss(self, pred, label):
-      return (pred[0] - label) ** 2
-   
-   def calculate_derivative(self, pred, label):
-      diff = np.zeros_like(pred)
-      diff[0] = 2 * (pred[0] - label)
-      return diff
+   def calculate_derivative(self, y_out, target):
+      return y_out - target

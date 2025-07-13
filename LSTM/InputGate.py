@@ -1,45 +1,51 @@
 import numpy as np
 
-from helpers.useFunctions import sigmoid, tanh
+from helpers.useFunctions import sigmoid, sigmoid_derivative, tanh, tanh_derivative
 
 class InputGate:
-   def __init__(self, parameters, hidden_size, features_number, learning_rate):
+   def __init__(self, parameters, hidden_size, features_number):
       np.random.seed(0)
       
       self.hidden_size = hidden_size
-      self.learning_rate = learning_rate
-
       self.parameters = parameters
 
-      self.c_prev = np.zeros(hidden_size)
       self.h_prev = np.zeros(hidden_size)
       self.xc = []
+
+      self.s_out = []
+      self.i_out = []
    
-   def backward(self, derivative_i_output, derivative_c_tilda_output, di, dg):
-      di_input = derivative_i_output * di
-      d_c_tilda_input = derivative_c_tilda_output * dg
-      self.parameters.increase_i_weights_derivatives(np.outer(di_input, self.xc))
-      self.parameters.increase_i_biases_derivatives(di_input)
-      self.parameters.increase_c_weights_derivatives(np.outer(d_c_tilda_input, self.xc))
-      self.parameters.increase_c_biases_derivatives(d_c_tilda_input)
+   def forward(self, xc, h_prev):
+      self.h_prev = h_prev
 
-      dxc = np.dot(self.parameters.get_i_weights().T, di_input)
-      dxc += np.dot(self.parameters.get_c_weights().T, d_c_tilda_input)
+      self.xc = xc
+      self.i_out = sigmoid(
+         np.dot(self.parameters.get_i_weights(), self.xc) + self.parameters.get_i_biases()
+      )
+      self.s_out = tanh(
+         np.dot(self.parameters.get_s_weights(), self.xc) + self.parameters.get_s_biases()
+      )
 
-      return dxc
+      return self.i_out, self.s_out
+      
+   def backward(self, delta_c, i_out, s_out):
+      db_i = delta_c * s_out * sigmoid_derivative(i_out)
+      dw_i = np.outer(db_i, self.xc)
+      db_s = delta_c * i_out * tanh_derivative(s_out)
+      dw_s = np.outer(db_s, self.xc)
 
-   def forward(self, x, h_prev = None):
-      if (h_prev is not None):
-         self.h_prev = h_prev
+      self.parameters.increase_i_weights_derivatives(dw_i)
+      self.parameters.increase_i_biases_derivatives(db_i)
+      self.parameters.increase_s_weights_derivatives(dw_s)
+      self.parameters.increase_s_biases_derivatives(db_s)
+
+      delta_h_i = np.dot(self.parameters.get_i_weights().T, db_i)[-self.hidden_size:]
+      delta_h_s = np.dot(self.parameters.get_s_weights().T, db_s)[-self.hidden_size:]
+
+      return delta_h_i, delta_h_s
+
+   def get_s_out(self):
+      return self.s_out
    
-      self.xc = np.hstack((x, self.h_prev))
-      self.i_output = sigmoid(np.dot(self.parameters.get_i_weights(), self.xc) + self.parameters.get_i_biases())
-      self.c_output = tanh(np.dot(self.parameters.get_c_weights(), self.xc) + self.parameters.get_c_biases())
-
-      return self.i_output, self.c_output
-
-   def get_c_output(self):
-      return self.c_output
-   
-   def get_i_output(self):
-      return self.i_output
+   def get_i_out(self):
+      return self.i_out

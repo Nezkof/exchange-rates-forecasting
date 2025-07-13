@@ -1,66 +1,70 @@
 import numpy as np
+from LSTM.DenseLayer import DenseLayer
 from LSTM.ForgetGate import ForgetGate
 from LSTM.InputGate import InputGate
 from LSTM.LossLayer import LossLayer
 from LSTM.OutputGate import OutputGate
-from helpers.useFunctions import sigmoid_derivative, tanh_derivative
+from helpers.useFunctions import sigmoid_derivative, tanh, tanh_derivative
 
 
 class LSTMGate:
    def __init__(self, parameters, hidden_size, features_number, learning_rate):
-      self.forget_gate = ForgetGate(parameters, hidden_size, features_number, learning_rate)
-      self.input_gate = InputGate(parameters, hidden_size, features_number, learning_rate)
-      self.output_gate = OutputGate(parameters, hidden_size, features_number, learning_rate)
+      self.forget_gate = ForgetGate(parameters, hidden_size, features_number)
+      self.input_gate = InputGate(parameters, hidden_size, features_number)
+      self.output_gate = OutputGate(parameters, hidden_size, features_number)
+      self.dense_layer = DenseLayer(parameters, hidden_size)
       self.loss_layer = LossLayer()
 
       self.features_number = features_number
 
-      self.c_output = None
-      self.h_output = None
+      self.c_out = None
+      self.h_out = None
+      self.y_out = None
 
       self.loss = 0
-      self.c_prev_grad = 0
-      self.h_prev_grad = 0
-      self.c_prev = None
-   
-   def forward(self, row, c_prev, h_prev):
-      self.c_prev, f_output = self.forget_gate.forward(row, c_prev, h_prev)
-      i_output, c_tilda_output = self.input_gate.forward(row, h_prev)
-      o_output = self.output_gate.forward(row, h_prev)
 
-      self.c_output = c_tilda_output * i_output + self.c_prev * f_output
-      self.h_output = np.tanh(self.c_output) * o_output
-      # self.h_output = self.c_output * o_output
+   def backward(self, y_train, delta_h_next, delta_c_next):
+      o_out = self.output_gate.get_o_out()
+      i_out = self.input_gate.get_i_out()
+      s_out = self.input_gate.get_s_out()
+      f_out = self.forget_gate.get_f_out()
+
+      self.loss = self.loss_layer.calculate_loss(y_train, self.y_out)
       
-      return self.c_output, self.h_output
-   
-   def backward(self, h_derivative, c_derivative):
-      ds = self.output_gate.get_o_output() * h_derivative + c_derivative
-      do = self.c_output * h_derivative
-      di = self.input_gate.get_c_output() * ds
-      dg = self.input_gate.get_i_output() * ds
-      df = self.c_prev * ds
+      loss_gradient = self.loss_layer.calculate_derivative(self.y_out, y_train)
+      delta_h = delta_h_next + self.dense_layer.backward(loss_gradient)
 
-      dxc = self.forget_gate.backward(sigmoid_derivative(self.forget_gate.get_f_output()), df)
-      dxc += self.input_gate.backward(sigmoid_derivative(self.input_gate.get_i_output()), tanh_derivative(self.input_gate.get_c_output()),di, dg)
-      dxc += self.output_gate.backward(sigmoid_derivative(self.output_gate.get_o_output()), do)
+      delta_c = delta_c_next + delta_h * o_out * (1 - tanh(self.c_out) ** 2)
 
-      self.c_prev_grad = ds * self.input_gate.get_i_output()
-      self.h_prev_grad = dxc[self.features_number:]
+      delta_h_o = self.output_gate.backward(delta_h, self.c_out)
+      delta_h_i, delta_h_s = self.input_gate.backward(delta_c, i_out, s_out)
+      delta_h_f = self.forget_gate.backward(delta_c, f_out, self.c_prev)
 
-   def calculate_loss(self, y_out):
-      self.loss = self.loss_layer.calculate_loss(self.h_output, y_out)
+      delta_h_total = delta_h_o + delta_h_i + delta_h_s + delta_h_f
+
+      delta_c_prev = delta_c * f_out
+
+      return delta_h_total, delta_c_prev
+
+   def forward(self, row, c_prev, h_prev):
+      self.c_prev = c_prev
+
+      xc = np.hstack((row, h_prev))
+
+      f_out = self.forget_gate.forward(xc, c_prev, h_prev)
+      i_out, s_out = self.input_gate.forward(xc, h_prev)
+      o_out = self.output_gate.forward(xc, h_prev)
+
+      self.c_out = f_out * c_prev + i_out * s_out
+      self.h_out = o_out * tanh(self.c_out)
+
+      self.y_out = self.dense_layer.forward(self.h_out)
+
+      return self.c_out, self.h_out, self.y_out
+
+   def calculate_loss(self, y_train):
+      self.loss = self.loss_layer.calculate_loss(y_train, self.y_out)
       return self.loss
-
-   def calculate_loss_derivative(self, y_out):
-      self.loss_derivative = self.loss_layer.calculate_derivative(self.h_output, y_out)
-      return self.loss_derivative
-
-   def get_h_output(self):
-      return self.h_output
    
-   def get_c_prev_grad(self):
-      return self.c_prev_grad
-   
-   def get_h_prev_grad(self):
-      return self.h_prev_grad
+
+

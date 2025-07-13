@@ -163,26 +163,26 @@ def test_new_LSTM():
 
 # Data sequences settings
    function = math.sin
-   data_length = 500
+   data_length = 5000
    train_length_coef = 0.5
    train_length = int(data_length * train_length_coef)
    control_length = data_length - train_length
 
 # LSTM settings
-   hidden_size = 64
-   features_number = 10
-   learning_rate = 0.001
+   hidden_size = 256
+   output_size = 1
+   features_number = 50
+   learning_rate = 0.00001
    nodes_amount = 0
-   epochs = 999999999
+   epochs = 1000
    precision = 0.0001
 
 # Data forming
    dataProcessor = DataProcessor(function, features_number, data_length, train_length_coef)
-   X, y = dataProcessor.form_data_table()
+   X, y = dataProcessor.form_data_from_file()
    X_train, y_train, X_control, y_control = dataProcessor.split_data_table()
-   nodes_amount = len(y_train)
 
-   lstm = LSTM(hidden_size,features_number, learning_rate, nodes_amount)
+   lstm = LSTM(hidden_size,features_number, output_size, learning_rate)
    lstm.fit(X_train, y_train, epochs, precision)
 
    train_results = lstm.compute(X_train)
@@ -193,28 +193,16 @@ def test_new_LSTM():
    denormalized_control_results = dataProcessor.denormalize(control_results)
    denormalized_expected_control_results = dataProcessor.denormalize(y_control)
 
-   denormalized_train_results = train_results
-   denormalized_train_expected_values = y_train
-   denormalized_control_results = control_results
-   denormalized_expected_control_results = y_control
+   denormalized_train_results = dataProcessor.denormalize(train_results)
+   denormalized_train_expected_values = dataProcessor.denormalize(y_train)
+   denormalized_control_results = dataProcessor.denormalize(control_results)
+   denormalized_expected_control_results = dataProcessor.denormalize(y_control)
    std_control_error = 0
 
    for i in range(len(denormalized_control_results)):
       std_control_error += (denormalized_control_results[i] - denormalized_expected_control_results[i])**2
    
    std_control_error = std_control_error / len(denormalized_control_results)
-
-   # for i in range(len(denormalized_control_results)):
-      # print(denormalized_control_results[i], "|", denormalized_expected_control_results[i])
-
-   # logger = XLSLogger()
-   # now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-   # logger.log([
-   #    now, function.__name__, features_number, train_length, control_length, hidden_size,
-   #    minEpoch, minError, time_taken, 
-   #    population_size, parents_per_child, children_per_parents, tournament_size, similarity_coefficient, mutation_rate, mutation_fade_speed, similarity_coefficient_fade_speed,
-   #    std_control_error
-   # ])
 
    dataVisualizer = DataVisualizer(features_number, train_length, control_length)
    dataVisualizer.set_train_results(denormalized_train_results, 'blue')
