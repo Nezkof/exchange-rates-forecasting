@@ -43,7 +43,7 @@ class LSTM:
       self.lstm_parameters.update_parameters()
 
    def fit(self, x_train, y_train, epochs, precision):
-      self.nodes = [LSTMGate(self.lstm_parameters, self.hidden_size, self.features_number, self.learning_rate) for _ in range(len(x_train))]
+      self.nodes = [LSTMGate(self.lstm_parameters, self.hidden_size, self.features_number) for _ in range(len(x_train))]
 
       epoch = 0
       loss = np.inf
@@ -64,5 +64,6 @@ class LSTM:
          epoch += 1
 
    def compute(self, sequence):
+      self.nodes = [LSTMGate(self.lstm_parameters, self.hidden_size, self.features_number) for _ in range(len(sequence))]
       lstm_out = self.__forward(sequence)
       return lstm_out

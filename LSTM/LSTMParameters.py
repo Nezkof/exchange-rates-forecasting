@@ -2,7 +2,7 @@ import numpy as np
 from helpers.useRandom import random_array
 
 class LSTMParameters:
-   def __init__(self, hidden_size, features_number, output_size,learning_rate, bounds = [-0.05, 0.05]):
+   def __init__(self, hidden_size, features_number, output_size, learning_rate, bounds = [-0.05, 0.05]):
       self.hidden_size = hidden_size
       self.output_size = output_size
       self.hx_length = hidden_size + features_number

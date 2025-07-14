@@ -8,6 +8,7 @@ class DataProcessor:
       self.features_number = features_number
       self.data_length = data_length
       self.train_length = int(data_length * train_ratio)
+      self.train_ratio = train_ratio
       self.control_length = data_length - self.train_length
 
       self.mean = 0
@@ -24,18 +25,23 @@ class DataProcessor:
       y = (y - self.mean) / self.std
       return X, y
 
-   def __read_data_from_csv(self, path='./data/euro-daily-hist_1999_2022.csv'):
+   def __read_data_from_csv(self, path='', column_name=''):
       values = []
       with open(path, mode='r', encoding='utf-8') as file:
          reader = csv.reader(file)
-         next(reader)  
+         headers = next(reader) 
+         try:
+               column_index = headers.index(column_name)
+         except ValueError:
+               raise ValueError(f"Column '{column_name}' not found in CSV header: {headers}")
+
          for row in reader:
-            if len(row) >= 2:
-               val = row[-2]
-               if val in ("", "-"):
-                  continue
-               values.append(float(val))
-      return np.array(values[::-1])  
+               if len(row) > column_index:
+                  val = row[column_index]
+                  if val in ("", "-"):
+                     continue
+                  values.append(float(val))
+      return np.array(values[::-1]) 
 
    def __generate_sequences(self, values):
       total_possible = len(values) - self.features_number
@@ -48,10 +54,11 @@ class DataProcessor:
       y = sequences[:, -1]
       return X, y
 
-   def form_data_from_file(self):
-      values = self.__read_data_from_csv()
+   def form_data_from_file(self, path, column_name):
+      values = self.__read_data_from_csv(path, column_name)
       X, y = self.__generate_sequences(values)
       X, y = self.__normalize(X, y)
+      self.train_length = int(min(self.train_length, self.train_ratio * len(X)))
       self.__split(X, y)
       return X, y
 

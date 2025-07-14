@@ -9,7 +9,7 @@ from EvolutionalStrategy import EvolutionalStrategy
 from DataProcessor import DataProcessor
 from XLSLogger import XLSLogger
 
-from helpers.useFunctions import identity, rastrigin, styblinski_tang, holder_table, parabola
+from helpers.useFunctions import rastrigin, styblinski_tang, holder_table
 
 # V0.1
 def test_LSTM():
@@ -58,18 +58,18 @@ def test_LSTM():
       control_results.append(lstm.compute(sequence))
 
    denormalized_train_results = dataProcessor.denormalize(train_results)
-   denormalized_train_expected_values = dataProcessor.denormalize(expected_train_results)
+   denormalized_train_y = dataProcessor.denormalize(expected_train_results)
    denormalized_control_results = dataProcessor.denormalize(control_results)
-   denormalized_expected_control_results = dataProcessor.denormalize(expected_control_results)
+   denormalized_control_y = dataProcessor.denormalize(expected_control_results)
    std_control_error = 0
 
    for i in range(len(denormalized_control_results)):
-      std_control_error += (denormalized_control_results[i] - denormalized_expected_control_results[i])**2
+      std_control_error += (denormalized_control_results[i] - denormalized_control_y[i])**2
    
    std_control_error = std_control_error / len(denormalized_control_results)
 
    # for i in range(len(denormalized_control_results)):
-      # print(denormalized_control_results[i], "|", denormalized_expected_control_results[i])
+      # print(denormalized_control_results[i], "|", denormalized_control_y[i])
 
    logger = XLSLogger()
    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -82,9 +82,9 @@ def test_LSTM():
 
    dataVisualizer = DataVisualizer(features_number, train_length, control_length)
    dataVisualizer.set_train_results(denormalized_train_results, 'blue')
-   dataVisualizer.set_expected_train_results(denormalized_train_expected_values, 'red')
+   dataVisualizer.set_expected_train_results(denormalized_train_y, 'red')
    dataVisualizer.set_control_results(denormalized_control_results, 'lightblue')
-   dataVisualizer.set_exprected_control_results(denormalized_expected_control_results, 'pink')
+   dataVisualizer.set_exprected_control_results(denormalized_control_y, 'pink')
 
    dataVisualizer.build_plot()
 
@@ -153,18 +153,51 @@ def test_evolutional_algorithm():
       print(fitness_functions[i](results[i]), fitness_functions[i](expected_args[i]))
 
 # V0.2 
-def generate_data(function, features_number, data_length, train_length_coef):
-   processor = DataProcessor(function, features_number, data_length, train_length_coef)
-   X, y = processor.form_data_table()
-   return processor.split_data_table()
+def form_data(dataProcessor, path, column_name):
+   dataProcessor.form_data_from_file(path, column_name)
+   return dataProcessor.split_data_table()
 
+def denormalize_data(dataProcessor, train_results, y_train, control_results, y_control):
+   denormalized_train_results = dataProcessor.denormalize(train_results)
+   denormalized_train_y = dataProcessor.denormalize(y_train)
+   denormalized_control_results = dataProcessor.denormalize(control_results)
+   denormalized_control_y = dataProcessor.denormalize(y_control)
+
+   return denormalized_train_results, denormalized_train_y, denormalized_control_results, denormalized_control_y
+
+def visualize_data(
+      features_number, 
+      train_length, 
+      control_length, 
+      denormalized_train_results, 
+      denormalized_train_y, 
+      denormalized_control_results, 
+      denormalized_control_y
+   ):
+   dataVisualizer = DataVisualizer(features_number, train_length, control_length)
+   dataVisualizer.set_train_results(denormalized_train_results, 'blue')
+   dataVisualizer.set_expected_train_results(denormalized_train_y, 'red')
+   dataVisualizer.set_control_results(denormalized_control_results, 'lightblue')
+   dataVisualizer.set_exprected_control_results(denormalized_control_y, 'pink')
+
+   dataVisualizer.build_plot()
+   
 def test_new_LSTM():
    np.random.seed(0)
+
+# Data file settings
+   # USD/EUR
+   # csv_path = './data/euro-daily-hist_1999_2022.csv'
+   # column_name = '[US dollar ]'
+
+   #BTC/USD
+   csv_path = './data/bitcoin-rates.csv'
+   column_name = 'Close/Last'
 
 # Data sequences settings
    function = math.sin
    data_length = 5000
-   train_length_coef = 0.5
+   train_length_coef = 0.8
    train_length = int(data_length * train_length_coef)
    control_length = data_length - train_length
 
@@ -172,15 +205,21 @@ def test_new_LSTM():
    hidden_size = 256
    output_size = 1
    features_number = 50
-   learning_rate = 0.00001
+   learning_rate = 0.00005
    nodes_amount = 0
-   epochs = 1000
+   epochs = 5000
    precision = 0.0001
 
 # Data forming
    dataProcessor = DataProcessor(function, features_number, data_length, train_length_coef)
-   X, y = dataProcessor.form_data_from_file()
-   X_train, y_train, X_control, y_control = dataProcessor.split_data_table()
+   X_train, y_train, X_control, y_control = form_data(dataProcessor, csv_path, column_name)
+   train_length = len(X_train)
+   control_length = len(X_control)
+   data_length = train_length + control_length
+
+   print(train_length)
+   print(control_length)
+   print(data_length)
 
    lstm = LSTM(hidden_size,features_number, output_size, learning_rate)
    lstm.fit(X_train, y_train, epochs, precision)
@@ -188,29 +227,22 @@ def test_new_LSTM():
    train_results = lstm.compute(X_train)
    control_results = lstm.compute(X_control)
 
-   denormalized_train_results = dataProcessor.denormalize(train_results)
-   denormalized_train_expected_values = dataProcessor.denormalize(y_train)
-   denormalized_control_results = dataProcessor.denormalize(control_results)
-   denormalized_expected_control_results = dataProcessor.denormalize(y_control)
+   denormalized_train_results, denormalized_train_y, denormalized_control_results, denormalized_control_y = denormalize_data(dataProcessor, train_results, y_train, control_results, y_control)
 
-   denormalized_train_results = dataProcessor.denormalize(train_results)
-   denormalized_train_expected_values = dataProcessor.denormalize(y_train)
-   denormalized_control_results = dataProcessor.denormalize(control_results)
-   denormalized_expected_control_results = dataProcessor.denormalize(y_control)
-   std_control_error = 0
+   print(len(denormalized_train_results))
+   print(len(denormalized_train_y))
+   print(len(denormalized_control_results))
+   print(len(denormalized_control_y))
 
-   for i in range(len(denormalized_control_results)):
-      std_control_error += (denormalized_control_results[i] - denormalized_expected_control_results[i])**2
-   
-   std_control_error = std_control_error / len(denormalized_control_results)
-
-   dataVisualizer = DataVisualizer(features_number, train_length, control_length)
-   dataVisualizer.set_train_results(denormalized_train_results, 'blue')
-   dataVisualizer.set_expected_train_results(denormalized_train_expected_values, 'red')
-   dataVisualizer.set_control_results(denormalized_control_results, 'lightblue')
-   dataVisualizer.set_exprected_control_results(denormalized_expected_control_results, 'pink')
-
-   dataVisualizer.build_plot()
+   visualize_data(
+      features_number, 
+      train_length, 
+      control_length, 
+      denormalized_train_results, 
+      denormalized_train_y, 
+      denormalized_control_results, 
+      denormalized_control_y
+   )
 
 def main():
    # test_LSTM() 

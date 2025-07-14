@@ -8,7 +8,7 @@ from helpers.useFunctions import sigmoid_derivative, tanh, tanh_derivative
 
 
 class LSTMGate:
-   def __init__(self, parameters, hidden_size, features_number, learning_rate):
+   def __init__(self, parameters, hidden_size, features_number):
       self.forget_gate = ForgetGate(parameters, hidden_size, features_number)
       self.input_gate = InputGate(parameters, hidden_size, features_number)
       self.output_gate = OutputGate(parameters, hidden_size, features_number)
