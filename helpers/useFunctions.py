@@ -43,5 +43,4 @@ def gauss(a, c, x):
    return math.exp(exponent)
 
 def parabola(x):
-   # return x**2
-   return x
+   return x**2

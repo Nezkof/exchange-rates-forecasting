@@ -9,7 +9,7 @@ from EvolutionalStrategy import EvolutionalStrategy
 from DataProcessor import DataProcessor
 from XLSLogger import XLSLogger
 
-from helpers.useFunctions import rastrigin, styblinski_tang, holder_table
+from helpers.useFunctions import parabola, rastrigin, styblinski_tang, holder_table
 
 # V0.1
 def test_LSTM():
@@ -155,6 +155,7 @@ def test_evolutional_algorithm():
 # V0.2 
 def form_data(dataProcessor, path, column_name):
    dataProcessor.form_data_from_file(path, column_name)
+   # dataProcessor.form_data_table()
    return dataProcessor.split_data_table()
 
 def denormalize_data(dataProcessor, train_results, y_train, control_results, y_control):
@@ -182,21 +183,47 @@ def visualize_data(
 
    dataVisualizer.build_plot()
    
+def get_pure_control_results(lstm, x_train, control_length, last_predicted):
+    y_out_vector = []
+    
+    current_sequence = x_train[-1].copy()  
+    current_sequence = np.append(current_sequence[1:], last_predicted)
+    
+    for i in range(control_length):
+        print(f"{i * 100 / control_length}%")
+        
+        y_out = lstm.compute([current_sequence])[-1]
+        y_out_vector.append(y_out)
+        
+        current_sequence = np.append(current_sequence[1:], y_out)
+    
+    return y_out_vector
+
+def get_control_results(lstm, x_control):
+   control_results = []
+
+   for row in x_control:
+      y_out = lstm.compute([row])[-1]
+      control_results.append(y_out)
+
+   return control_results
+
+
 def test_new_LSTM():
    np.random.seed(0)
 
 # Data file settings
    # USD/EUR
-   # csv_path = './data/euro-daily-hist_1999_2022.csv'
-   # column_name = '[US dollar ]'
+   csv_path = './data/euro-daily-hist_1999_2022.csv'
+   column_name = '[US dollar ]'
 
    #BTC/USD
-   csv_path = './data/bitcoin-rates.csv'
-   column_name = 'Close/Last'
+   # csv_path = './data/bitcoin-rates.csv'
+   # column_name = 'Close/Last'
 
 # Data sequences settings
-   function = math.sin
-   data_length = 5000
+   function = parabola
+   data_length = 2000
    train_length_coef = 0.8
    train_length = int(data_length * train_length_coef)
    control_length = data_length - train_length
@@ -206,8 +233,9 @@ def test_new_LSTM():
    output_size = 1
    features_number = 50
    learning_rate = 0.00005
+   learning_rate_decrease_speed = 0.999
    nodes_amount = 0
-   epochs = 5000
+   epochs = 300
    precision = 0.0001
 
 # Data forming
@@ -217,22 +245,22 @@ def test_new_LSTM():
    control_length = len(X_control)
    data_length = train_length + control_length
 
-   print(train_length)
-   print(control_length)
-   print(data_length)
-
-   lstm = LSTM(hidden_size,features_number, output_size, learning_rate)
+   lstm = LSTM(hidden_size,features_number, output_size, learning_rate, learning_rate_decrease_speed)
    lstm.fit(X_train, y_train, epochs, precision)
+   print("Training finished")
 
-   train_results = lstm.compute(X_train)
+   train_results = lstm.compute(X_train, True)
+   print("Training preditions finished")
+   # control_results = get_pure_control_results(lstm, X_train, len(X_control), train_results[-1])
+   print("X_train")
+   print(X_train)
+   print("X_control")
+   print(X_control)
+   # control_results = get_control_results(lstm, X_control)
    control_results = lstm.compute(X_control)
+   print("Control preditions finished")
 
    denormalized_train_results, denormalized_train_y, denormalized_control_results, denormalized_control_y = denormalize_data(dataProcessor, train_results, y_train, control_results, y_control)
-
-   print(len(denormalized_train_results))
-   print(len(denormalized_train_y))
-   print(len(denormalized_control_results))
-   print(len(denormalized_control_y))
 
    visualize_data(
       features_number, 
@@ -243,6 +271,7 @@ def test_new_LSTM():
       denormalized_control_results, 
       denormalized_control_y
    )
+
 
 def main():
    # test_LSTM() 
