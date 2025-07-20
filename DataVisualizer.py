@@ -6,6 +6,19 @@ class DataVisualizer:
       self.features_number = features_number
       self.train_length = train_length
       self.control_length = control_length
+
+      self.data = []
+   
+   def add_data(self, x_values, y_values, color, marker, label):
+      values_data = {
+         "x_values": x_values,
+         "y_values": y_values,
+         "color": color,
+         "marker": marker,
+         "label": label
+      }
+
+      self.data.append(values_data)
    
    def set_train_results(self, data, color):
       self.train_results = data
@@ -26,13 +39,19 @@ class DataVisualizer:
    def build_plot(self):      
       plt.figure(figsize=(12, 6))
 
-      train_x = range(self.features_number, self.features_number + len(self.train_results))
-      control_x = range(len(self.train_results) + self.features_number, self.features_number + len(self.train_results) + len(self.control_results))
+      for data in self.data:
+         plt.plot(
+            data["x_values"],
+            data["y_values"],
+            marker=data["marker"],
+            color=data["color"],
+            label=data["label"]
+         )
 
-      plt.plot(train_x, self.train_results, marker='X', color=self.train_results_color, label='Train Results')
-      plt.plot(train_x, self.expected_train_results, marker='o', color=self.expected_train_results_color, label='Expected Train Results')
-      plt.plot(control_x, self.control_results, marker='X', color=self.control_results_color, label='Control Results')
-      plt.plot(control_x, self.expected_control_results, marker='o', color=self.expected_control_results_color, label='Expected Control Results')
+      # plt.plot(train_x, self.train_results, marker='X', color=self.train_results_color, label='Train Results')
+      # plt.plot(train_x, self.expected_train_results, marker='o', color=self.expected_train_results_color, label='Expected Train Results')
+      # plt.plot(control_x, self.control_results, marker='X', color=self.control_results_color, label='Control Results')
+      # plt.plot(control_x, self.expected_control_results, marker='o', color=self.expected_control_results_color, label='Expected Control Results')
 
       plt.grid(True)
       plt.legend()

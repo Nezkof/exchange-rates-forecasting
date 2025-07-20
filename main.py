@@ -1,6 +1,7 @@
 from datetime import datetime
 import math
 import time
+import json
 
 import numpy as np
 from DataVisualizer import DataVisualizer
@@ -158,30 +159,14 @@ def form_data(dataProcessor, path, column_name):
    # dataProcessor.form_data_table()
    return dataProcessor.split_data_table()
 
-def denormalize_data(dataProcessor, train_results, y_train, control_results, y_control):
+def denormalize_data(dataProcessor, train_results, y_train, control_results, y_control, pure_control_results):
    denormalized_train_results = dataProcessor.denormalize(train_results)
    denormalized_train_y = dataProcessor.denormalize(y_train)
    denormalized_control_results = dataProcessor.denormalize(control_results)
    denormalized_control_y = dataProcessor.denormalize(y_control)
+   denormalized_pure_control_results = dataProcessor.denormalize(pure_control_results)
 
-   return denormalized_train_results, denormalized_train_y, denormalized_control_results, denormalized_control_y
-
-def visualize_data(
-      features_number, 
-      train_length, 
-      control_length, 
-      denormalized_train_results, 
-      denormalized_train_y, 
-      denormalized_control_results, 
-      denormalized_control_y
-   ):
-   dataVisualizer = DataVisualizer(features_number, train_length, control_length)
-   dataVisualizer.set_train_results(denormalized_train_results, 'blue')
-   dataVisualizer.set_expected_train_results(denormalized_train_y, 'red')
-   dataVisualizer.set_control_results(denormalized_control_results, 'lightblue')
-   dataVisualizer.set_exprected_control_results(denormalized_control_y, 'pink')
-
-   dataVisualizer.build_plot()
+   return denormalized_train_results, denormalized_train_y, denormalized_control_results, denormalized_control_y, denormalized_pure_control_results
    
 def get_pure_control_results(lstm, x_train, control_length, last_predicted):
     y_out_vector = []
@@ -208,38 +193,31 @@ def get_control_results(lstm, x_control):
 
    return control_results
 
+def load_config(path):
+    with open(path, 'r') as file:
+        return json.load(file)
 
 def test_new_LSTM():
    np.random.seed(0)
 
-# Data file settings
-   # USD/EUR
-   csv_path = './data/euro-daily-hist_1999_2022.csv'
-   column_name = '[US dollar ]'
-
-   #BTC/USD
-   # csv_path = './data/bitcoin-rates.csv'
-   # column_name = 'Close/Last'
-
-# Data sequences settings
+   config = load_config("./configs/usd-uah.json")
    function = parabola
-   data_length = 2000
-   train_length_coef = 0.8
-   train_length = int(data_length * train_length_coef)
-   control_length = data_length - train_length
-
-# LSTM settings
-   hidden_size = 256
-   output_size = 1
-   features_number = 50
-   learning_rate = 0.00005
-   learning_rate_decrease_speed = 0.999
-   nodes_amount = 0
-   epochs = 300
-   precision = 0.0001
+   csv_path = config["csv_path"]
+   column_name = config["column_name"]
+   hidden_size = config["hidden_size"]
+   output_size = config["output_size"]
+   features_number = config["features_number"]
+   learning_rate = config["learning_rate"]
+   learning_rate_decrease_speed = config["learning_rate_decrease_speed"]
+   nodes_amount = config["nodes_amount"]
+   epochs = config["epochs"]
+   precision = config["precision"]
+   data_length = config["data_length"]
+   control_length = config["control_length"]
+   train_length = data_length - control_length - features_number
 
 # Data forming
-   dataProcessor = DataProcessor(function, features_number, data_length, train_length_coef)
+   dataProcessor = DataProcessor(features_number, data_length, train_length, control_length, function)
    X_train, y_train, X_control, y_control = form_data(dataProcessor, csv_path, column_name)
    train_length = len(X_train)
    control_length = len(X_control)
@@ -247,30 +225,29 @@ def test_new_LSTM():
 
    lstm = LSTM(hidden_size,features_number, output_size, learning_rate, learning_rate_decrease_speed)
    lstm.fit(X_train, y_train, epochs, precision)
-   print("Training finished")
-
    train_results = lstm.compute(X_train, True)
-   print("Training preditions finished")
-   # control_results = get_pure_control_results(lstm, X_train, len(X_control), train_results[-1])
-   print("X_train")
-   print(X_train)
-   print("X_control")
-   print(X_control)
-   # control_results = get_control_results(lstm, X_control)
+   pure_control_results = get_pure_control_results(lstm, X_train, len(X_control), train_results[-1])
    control_results = lstm.compute(X_control)
-   print("Control preditions finished")
 
-   denormalized_train_results, denormalized_train_y, denormalized_control_results, denormalized_control_y = denormalize_data(dataProcessor, train_results, y_train, control_results, y_control)
+   denormalized_train_results, denormalized_train_y, denormalized_control_results, denormalized_control_y, denormalized_pure_control_results = denormalize_data(dataProcessor, train_results, y_train, control_results, y_control, pure_control_results)
+   train_x = range(features_number, features_number + len(denormalized_train_results))
+   control_x = range(len(denormalized_train_results) + features_number, features_number + len(denormalized_train_results) + len(denormalized_control_results))
 
-   visualize_data(
-      features_number, 
-      train_length, 
-      control_length, 
-      denormalized_train_results, 
-      denormalized_train_y, 
-      denormalized_control_results, 
-      denormalized_control_y
-   )
+   dataVisualizer = DataVisualizer(features_number, train_length, control_length)
+   dataVisualizer.add_data(train_x, denormalized_train_results, 'blue', 'X', "Train Results")
+   dataVisualizer.add_data(train_x, denormalized_train_y, 'red', 'o', "Expected Train Results")
+   dataVisualizer.add_data(control_x, denormalized_control_results, 'lightblue', 'X', "Control Results")
+   dataVisualizer.add_data(control_x, denormalized_control_y, 'pink', 'o', "Expected Control Results")
+   dataVisualizer.add_data(control_x, denormalized_pure_control_results, 'yellow', 'o', "Pure Control Results")
+   dataVisualizer.build_plot()
+
+   print(f"{'Actual value':>15} {'Predicted value':>20} {'Error':>15}")
+   print("-" * 50)
+   for i in range(len(denormalized_control_y)):
+      actual = denormalized_control_y[i]
+      predicted = denormalized_pure_control_results[i]
+      error = actual - predicted
+      print(f"{actual:15.6f} {predicted:20.6f} {error:15.6f}")
 
 
 def main():
