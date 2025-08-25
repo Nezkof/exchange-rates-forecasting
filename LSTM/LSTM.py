@@ -76,3 +76,6 @@ class LSTM:
       self.nodes = [LSTMGate(self.lstm_parameters, self.hidden_size, self.features_number) for _ in range(len(sequence))]
       lstm_out = self.__forward(sequence)
       return lstm_out
+   
+   def get_parameters(self):
+      return self.lstm_parameters

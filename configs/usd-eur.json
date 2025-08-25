@@ -6,9 +6,9 @@
    "output_size": 1,
    "features_number": 50,
    "learning_rate": 0.00002,
-   "learning_rate_decrease_speed": 1,
+   "learning_rate_decrease_speed": 1.0001,
    "nodes_amount": 0,
-   "epochs": 300,
+   "epochs": 3000,
    "precision": 0.000001,
 
    "data_length": 5000,
