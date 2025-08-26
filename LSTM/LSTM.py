@@ -48,6 +48,8 @@ class LSTM:
 
       epoch = 0
       loss = np.inf
+      eta0 = self.learning_rate
+
       while epoch < epochs and loss > precision:
          self.c_prev = np.zeros(self.hidden_size)
          self.h_prev = np.zeros(self.hidden_size)
@@ -65,7 +67,7 @@ class LSTM:
          print("lr:", "%.3e" % self.learning_rate)
          ## 
 
-         self.learning_rate *= self.lr_decrease_speed
+         self.learning_rate = eta0 / (1 + self.lr_decrease_speed * epoch)
 
          epoch += 1
 

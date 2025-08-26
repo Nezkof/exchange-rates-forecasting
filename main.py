@@ -55,7 +55,7 @@ def load_file(path):
         return json.load(file)
 
 def load_config(config_name):
-   config = load_file(f"./configs/{config_name}")
+   config = load_file(f"./configs/{config_name}.json")
    csv_path = config["csv_path"]
    column_name = config["column_name"]
    hidden_size = config["hidden_size"]
@@ -87,7 +87,7 @@ def visialize_data(dataVisualizer, train_x, denormalized_train_results, denormal
       error = actual - predicted
       print(f"{actual.item():15.6f} {predicted.item():20.6f} {error.item():15.6f}")
 
-def run(config_name, load_weights):
+def run(config_name, load_weights, weights_file_path):
    np.random.seed(0)
 
 # Data loading
@@ -103,7 +103,7 @@ def run(config_name, load_weights):
 
    lstm = LSTM(hidden_size,features_number, output_size, learning_rate, learning_rate_decrease_speed)
 
-   parametersProcessor = ParametersProcessor("lstm_weights.npz")
+   parametersProcessor = ParametersProcessor(f"./weights/{weights_file_path}")
    if (load_weights):
       parametersProcessor.load(lstm.get_parameters())
    else:
@@ -111,6 +111,7 @@ def run(config_name, load_weights):
 
    train_results = lstm.compute(X_train, True)
    pure_control_results = get_pure_control_results(lstm, X_train, len(X_control), train_results[-1])
+   train_results = lstm.compute(X_train, True)
    control_results = lstm.compute(X_control)
    parametersProcessor.save(lstm.get_parameters())
 
@@ -124,9 +125,10 @@ def run(config_name, load_weights):
 
 
 def main():
-   config_name = "usd-eur.json"
+   config_name = "usd-eur"
+   weights_file_path = f"{config_name}-weights.npz"
    load_weights = True
-   run(config_name, load_weights)
+   run(config_name, load_weights, weights_file_path)
 
 if __name__ == "__main__":
    main()
