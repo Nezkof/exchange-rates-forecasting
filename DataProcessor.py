@@ -16,6 +16,8 @@ class DataProcessor:
       self.train_data = None  
       self.control_data = None
 
+      self.last_date = None 
+
    def __normalize(self, X, y):
       all_values = np.concatenate([X.flatten(), y])
       self.mean = all_values.mean()
@@ -40,6 +42,7 @@ class DataProcessor:
                   if val in ("", "-"):
                      continue
                   values.append(float(val))
+                  self.last_date = row[0]
                   if len(values) >= self.data_length:
                      break  
       return np.array(values[::-1])
@@ -69,7 +72,6 @@ class DataProcessor:
       self.__split(X, y)
       return X, y
 
-
    def form_data_table(self):
       values = np.array([self.function(i) for i in range(self.data_length)])
       X, y = self.__generate_sequences(values)
@@ -94,3 +96,6 @@ class DataProcessor:
 
    def get_control_data(self):
       return self.control_data
+
+   def get_last_date(self):
+      return self.last_date

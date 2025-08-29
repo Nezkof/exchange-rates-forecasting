@@ -9,6 +9,7 @@ from LSTM.LSTM import LSTM
 from EvolutionalStrategy import EvolutionalStrategy
 from DataProcessor import DataProcessor
 from ParametersProcessor import ParametersProcessor
+from XLSLogger import XLSLogger
 
 # V0.2 
 def form_data(dataProcessor, path, column_name):
@@ -32,8 +33,6 @@ def get_pure_control_results(lstm, x_train, control_length, last_predicted):
     current_sequence = np.append(current_sequence[1:], last_predicted)
     
     for i in range(control_length):
-        print(f"{i * 100 / control_length}%")
-        
         y_out = lstm.compute([current_sequence])[-1]
         y_out_vector.append(y_out)
         
@@ -87,7 +86,7 @@ def visialize_data(dataVisualizer, train_x, denormalized_train_results, denormal
       error = actual - predicted
       print(f"{actual.item():15.6f} {predicted.item():20.6f} {error.item():15.6f}")
 
-def run(config_name, load_weights, weights_file_path):
+def run(config_name, load_weights, weights_file_path, results_file_path):
    np.random.seed(0)
 
 # Data loading
@@ -103,7 +102,7 @@ def run(config_name, load_weights, weights_file_path):
 
    lstm = LSTM(hidden_size,features_number, output_size, learning_rate, learning_rate_decrease_speed)
 
-   parametersProcessor = ParametersProcessor(f"./weights/{weights_file_path}")
+   parametersProcessor = ParametersProcessor(f"./results/weights/{weights_file_path}")
    if (load_weights):
       parametersProcessor.load(lstm.get_parameters())
    else:
@@ -119,16 +118,22 @@ def run(config_name, load_weights, weights_file_path):
    train_x = range(features_number, features_number + len(denormalized_train_results))
    control_x = range(len(denormalized_train_results) + features_number, features_number + len(denormalized_train_results) + len(denormalized_control_results))
 
+# Data logging
+   dataLogger = XLSLogger(f"./results/{results_file_path}")
+   dataLogger.writeFile(denormalized_control_y, denormalized_pure_control_results)
+   
 # Data visualizing 
    dataVisualizer = DataVisualizer(features_number, train_length, control_length)
    visialize_data(dataVisualizer, train_x, denormalized_train_results, denormalized_train_y, control_x, denormalized_control_results, denormalized_control_y, denormalized_pure_control_results)
 
-
 def main():
    config_name = "usd-eur"
+   time_stamp = datetime.now().strftime("%d.%m.%Y %H:%M")
+   # weights_file_path = f"{config_name}-{time_stamp}.npz"
    weights_file_path = f"{config_name}-weights.npz"
+   results_file_path = "results.xlsx"
    load_weights = True
-   run(config_name, load_weights, weights_file_path)
+   run(config_name, load_weights, weights_file_path, results_file_path)
 
 if __name__ == "__main__":
    main()

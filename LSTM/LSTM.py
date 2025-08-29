@@ -12,6 +12,7 @@ class LSTM:
       self.lr_decrease_speed = lr_decrease_speed
       self.lstm_parameters = LSTMParameters(hidden_size, features_number, output_size, learning_rate)
       self.nodes = []
+      self.loss = np.inf
 
       self.c_prev = np.zeros(self.hidden_size)
       self.h_prev = np.zeros(self.hidden_size)
@@ -47,28 +48,24 @@ class LSTM:
       self.nodes = [LSTMGate(self.lstm_parameters, self.hidden_size, self.features_number) for _ in range(len(x_train))]
 
       epoch = 0
-      loss = np.inf
       eta0 = self.learning_rate
 
-      while epoch < epochs and loss > precision:
+      while epoch < epochs and self.loss > precision:
          self.c_prev = np.zeros(self.hidden_size)
          self.h_prev = np.zeros(self.hidden_size)
          lstm_out = self.__forward(x_train)
-         loss = self.__backward(y_train)
+         self.loss = self.__backward(y_train)
          self.__update_coefficients()
 
          ## LOGGER FUNCTIONALITY
          clear = lambda: os.system('cls')
          clear()
-         # formatted = ", ".join(f"{val:.5f}" for val in lstm_out)
          print(f"Epoch: {epoch} ")
-         # print(f"output: [{formatted}]")
-         print("loss:", "%.3e" % loss)
+         print("loss:", "%.3e" % self.loss)
          print("lr:", "%.3e" % self.learning_rate)
          ## 
 
          self.learning_rate = eta0 / (1 + self.lr_decrease_speed * epoch)
-
          epoch += 1
 
    def compute(self, sequence, reset_params = False):
@@ -81,3 +78,6 @@ class LSTM:
    
    def get_parameters(self):
       return self.lstm_parameters
+   
+   def get_loss(self):
+      return self.loss
