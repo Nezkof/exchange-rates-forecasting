@@ -5,12 +5,12 @@
    "hidden_size": 256,
    "output_size": 1,
    "features_number": 50,
-   "learning_rate": 0.00002,
-   "learning_rate_decrease_speed": 0.0018,
+   "learning_rate": 0.001,
+   "learning_rate_decrease_speed": 0.000018,
    "nodes_amount": 0,
    "epochs": 3000,
    "precision": 0.000001,
 
    "data_length": 5000,
-   "control_length": 30
+   "control_length": 7
 }

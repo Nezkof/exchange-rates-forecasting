@@ -132,7 +132,7 @@ def main():
    # weights_file_path = f"{config_name}-{time_stamp}.npz"
    weights_file_path = f"{config_name}-weights.npz"
    results_file_path = "results.xlsx"
-   load_weights = True
+   load_weights = False
    run(config_name, load_weights, weights_file_path, results_file_path)
 
 if __name__ == "__main__":
