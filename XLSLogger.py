@@ -30,9 +30,15 @@ class XLSLogger:
          self.sheet.cell(row=self.row_index, column=i, value=self._normalize(val))
       self.row_index += 1
 
-   def writeFile(self, arr1, arr2):
+   def writeFile(self, optimizer, loss, arr1, arr2):
       now = datetime.now().strftime("%d.%m.%Y %H:%M")
       self.sheet.cell(row=self.row_index, column=1, value=now)
+      self.row_index += 1
+
+      self.sheet.cell(row=self.row_index, column=1, value=optimizer)
+      self.row_index += 1
+
+      self.sheet.cell(row=self.row_index, column=1, value=loss)
       self.row_index += 1
 
       self._write_row("Control", arr1)

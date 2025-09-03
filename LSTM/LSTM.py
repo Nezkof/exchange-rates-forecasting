@@ -1,18 +1,15 @@
 import os
 import numpy as np
 from LSTM.LSTMGate import LSTMGate
-from LSTM.LSTMParameters import LSTMParameters
-from LSTM.AdamOptimizer import AdamOptimizer
-from helpers.useFunctions import sigmoid_derivative, tanh_derivative
+from LSTM.optimizers.OptimizerFactory import OptimizerFactory
 
 class LSTM: 
-   def __init__(self, hidden_size, features_number, output_size, learning_rate, lr_decrease_speed):      
+   def __init__(self, optimizer_type, hidden_size, features_number, output_size, learning_rate, lr_decrease_speed):      
+      self.lstm_parameters = OptimizerFactory.create_optimizer(optimizer_type, hidden_size, features_number, output_size, learning_rate)
       self.hidden_size = hidden_size
       self.features_number = features_number
       self.learning_rate = learning_rate
       self.lr_decrease_speed = lr_decrease_speed
-      # self.lstm_parameters = LSTMParameters(hidden_size, features_number, output_size, learning_rate)
-      self.lstm_parameters = AdamOptimizer(hidden_size, features_number, output_size, learning_rate)
       self.nodes = []
       self.loss = np.inf
 

@@ -67,8 +67,9 @@ def load_config(config_name):
    precision = config["precision"]
    data_length = config["data_length"]
    control_length = config["control_length"]
+   optimizer = config["optimizer"]
 
-   return csv_path, column_name, hidden_size, output_size,features_number, learning_rate, learning_rate_decrease_speed, nodes_amount, epochs, precision, data_length, control_length
+   return csv_path, column_name, hidden_size, output_size,features_number, learning_rate, learning_rate_decrease_speed, nodes_amount, epochs, precision, data_length, control_length, optimizer
 
 def visialize_data(dataVisualizer, train_x, denormalized_train_results, denormalized_train_y, control_x, denormalized_control_results, denormalized_control_y, denormalized_pure_control_results):
    dataVisualizer.add_data(train_x, denormalized_train_results, 'blue', 'X', "Train Results")
@@ -90,7 +91,7 @@ def run(config_name, load_weights, weights_file_path, results_file_path):
    np.random.seed(0)
 
 # Data loading
-   csv_path, column_name, hidden_size, output_size,features_number, learning_rate, learning_rate_decrease_speed, nodes_amount, epochs, precision, data_length, control_length = load_config(config_name)
+   csv_path, column_name, hidden_size, output_size,features_number, learning_rate, learning_rate_decrease_speed, nodes_amount, epochs, precision, data_length, control_length, optimizer = load_config(config_name)
    train_length = data_length - control_length - features_number
 
 # Data forming
@@ -100,9 +101,9 @@ def run(config_name, load_weights, weights_file_path, results_file_path):
    control_length = len(X_control)
    data_length = train_length + control_length
 
-   lstm = LSTM(hidden_size,features_number, output_size, learning_rate, learning_rate_decrease_speed)
+   lstm = LSTM(optimizer, hidden_size,features_number, output_size, learning_rate, learning_rate_decrease_speed)
 
-   parametersProcessor = ParametersProcessor(f"./results/weights/{weights_file_path}")
+   parametersProcessor = ParametersProcessor(f"./results/weights/{optimizer}-{weights_file_path}")
    if (load_weights):
       parametersProcessor.load(lstm.get_parameters())
    else:
@@ -120,7 +121,8 @@ def run(config_name, load_weights, weights_file_path, results_file_path):
 
 # Data logging
    dataLogger = XLSLogger(f"./results/{results_file_path}")
-   dataLogger.writeFile(denormalized_control_y, denormalized_pure_control_results)
+   loss = lstm.get_loss()
+   dataLogger.writeFile(optimizer, loss, denormalized_control_y, denormalized_pure_control_results)
    
 # Data visualizing 
    dataVisualizer = DataVisualizer(features_number, train_length, control_length)
