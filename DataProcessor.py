@@ -1,5 +1,6 @@
 import numpy as np
 import csv
+import math
 from numpy.lib.stride_tricks import sliding_window_view
 
 class DataProcessor:
@@ -40,12 +41,42 @@ class DataProcessor:
                if len(row) > column_index:
                   val = row[column_index]
                   if val in ("", "-"):
-                     continue
+                     val = float('inf')
                   values.append(float(val))
                   self.last_date = row[0]
                   if len(values) >= self.data_length:
                      break  
       return np.array(values[::-1])
+   
+   def __fill_empties(self, values):
+      for i in range(len(values)):
+         if math.isinf(values[i]):
+               if i == 0: 
+                  j = i + 1
+                  while j < len(values) and math.isinf(values[j]):
+                     j += 1
+                  values[i] = values[j] if j < len(values) else 0.0  
+               elif i == len(values) - 1:  
+                  j = i - 1
+                  while j >= 0 and math.isinf(values[j]):
+                     j -= 1
+                  values[i] = values[j] if j >= 0 else 0.0  
+               else:  
+                  left, right = values[i - 1], values[i + 1]
+                  li, ri = i - 1, i + 1
+                  while li >= 0 and math.isinf(values[li]):
+                     li -= 1
+                  while ri < len(values) and math.isinf(values[ri]):
+                     ri += 1
+                  if li >= 0 and ri < len(values):
+                     values[i] = (values[li] + values[ri]) / 2
+                  elif li >= 0:
+                     values[i] = values[li]
+                  elif ri < len(values):  
+                     values[i] = values[ri]
+                  else:
+                     values[i] = 0.0  
+      return values
 
    def __generate_sequences(self, values):
       sequences = sliding_window_view(values, self.features_number + 1)
@@ -62,6 +93,7 @@ class DataProcessor:
          raise ValueError(f"data_length is too small for the given features_number and split sizes {self.data_length} < {self.features_number} + {self.train_length} + {self.control_length}")
 
       values = self.__read_data_from_csv(path, column_name)
+      values = self.__fill_empties(values)
       X, y = self.__generate_sequences(values)
 
       available_length = len(X)

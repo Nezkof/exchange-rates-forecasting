@@ -114,3 +114,19 @@ class ADAM(Optimizer):
 
    def increase_y_biases_derivatives(self, value):
       self.y_biases_derivatives += value
+
+   def average_parameters(self, value):
+      if value == 0:
+         return  
+
+      self.f_weights_derivatives /= value
+      self.i_weights_derivatives /= value
+      self.s_weights_derivatives /= value
+      self.o_weights_derivatives /= value
+      self.y_weights_derivatives /= value
+
+      self.f_biases_derivatives /= value
+      self.i_biases_derivatives /= value
+      self.s_biases_derivatives /= value
+      self.o_biases_derivatives /= value
+      self.y_biases_derivatives /= value
