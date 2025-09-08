@@ -32,3 +32,6 @@ class ParametersProcessor:
       params.s_biases = data["s_biases"]
       params.o_biases = data["o_biases"]
       params.y_biases = data["y_biases"]
+
+   def set_path(self, path):
+      self.filepath = path

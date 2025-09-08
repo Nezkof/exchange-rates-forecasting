@@ -48,11 +48,6 @@ class DataVisualizer:
             label=data["label"]
          )
 
-      # plt.plot(train_x, self.train_results, marker='X', color=self.train_results_color, label='Train Results')
-      # plt.plot(train_x, self.expected_train_results, marker='o', color=self.expected_train_results_color, label='Expected Train Results')
-      # plt.plot(control_x, self.control_results, marker='X', color=self.control_results_color, label='Control Results')
-      # plt.plot(control_x, self.expected_control_results, marker='o', color=self.expected_control_results_color, label='Expected Control Results')
-
       plt.grid(True)
       plt.legend()
       plt.tight_layout()

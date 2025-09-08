@@ -30,7 +30,12 @@ class XLSLogger:
          self.sheet.cell(row=self.row_index, column=i, value=self._normalize(val))
       self.row_index += 1
 
-   def writeFile(self, optimizer, MAE, RMSE, MAPE , arr1, arr2):
+   def writeFile(
+         self, 
+         optimizer, MAE, RMSE, MAPE, 
+         Y_control, control_results, control_pure_results
+      ):
+      
       now = datetime.now().strftime("%d.%m.%Y %H:%M")
       self.sheet.cell(row=self.row_index, column=1, value=now)
       self.row_index += 1
@@ -50,9 +55,11 @@ class XLSLogger:
       self.sheet.cell(row=self.row_index, column=2, value=MAPE)
       self.row_index += 1
 
-      self._write_row("Control", arr1)
-      self._write_row("Pure control", arr2)
-      diffs = [abs(self._normalize(v1) - self._normalize(v2)) for v1, v2 in zip(arr1, arr2)]
+      self._write_row("Y_table", Y_control)
+      self._write_row("Control_results", control_results)
+      self._write_row("Control_pure_results", control_pure_results)
+      
+      diffs = [abs(self._normalize(v1) - self._normalize(v2)) for v1, v2 in zip(Y_control, control_results)]
       self._write_row("Loss", diffs)
 
       self.row_index += 3
