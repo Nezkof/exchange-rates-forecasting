@@ -5,11 +5,17 @@ import json
 
 import numpy as np
 from DataVisualizer import DataVisualizer
-from LSTM.LSTM import LSTM
+# from LSTM.LSTM import LSTM
 from EvolutionalStrategy import EvolutionalStrategy
 from DataProcessor import DataProcessor
 from ParametersProcessor import ParametersProcessor
 from XLSLogger import XLSLogger
+
+from tensorflow import keras
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense
+
+import matplotlib.pyplot as plt
 
 # V0.2 
 def form_data(dataProcessor, path, column_name):
@@ -139,14 +145,60 @@ def run(config_name, load_weights, weights_file_path, results_file_path):
    dataVisualizer = DataVisualizer(features_number, train_length, control_length)
    visialize_data(dataVisualizer, train_x, den_train_results, den_train_y, control_x, den_control_results, den_control_y, den_pure_control_results)
 
+def run_def_lstm(config_name, load_weights, weights_file_path, results_file_path):
+   np.random.seed(0)
+
+# Data loading
+   csv_path, column_name, hidden_size, output_size,features_number, learning_rate, learning_rate_decrease_speed, nodes_amount, epochs, precision, data_length, control_length, optimizer = load_config(config_name)
+   train_length = data_length - control_length - features_number
+
+# Data forming
+   dataProcessor = DataProcessor(features_number, data_length, train_length, control_length)
+   X_train, y_train, X_control, y_control = form_data(dataProcessor, csv_path, column_name)
+
+   X_train = X_train.reshape((X_train.shape[0], X_train.shape[1], 1))
+   X_control = X_control.reshape((X_control.shape[0], X_control.shape[1], 1))
+
+   model = Sequential([
+      LSTM(50, activation='tanh', input_shape=(X_train.shape[1], 1)),
+      Dense(1)
+   ])
+
+   model.compile(optimizer='adam', loss='mse')
+   model.summary()
+
+   model.fit(X_train, y_train, epochs=20, batch_size=64, validation_data=(X_control, y_control))
+
+   train_results = model.predict(X_train)
+   control_results = model.predict(X_control)
+
+   MAE, RMSE, MAPE = calculate_losses(control_results.flatten(), y_control.flatten())
+
+
+   print(f"MAE-{MAE}")
+   print(f"RMSE-{RMSE}")
+   print(f"MAPE-{MAPE}")
+
+   plt.figure(figsize=(12, 6))
+   plt.plot(y_control, label="Реальні значення", linewidth=2)
+   plt.plot(control_results, label="Прогноз LSTM", linestyle="--", linewidth=2)
+   plt.title("Прогнозування на контрольній вибірці")
+   plt.xlabel("Часові кроки")
+   plt.ylabel("Значення")
+   plt.legend()
+   plt.grid(True)
+   plt.show()
+
 def main():
    config_name = "usd-eur"
    time_stamp = datetime.now().strftime("%d.%m.%Y %H:%M")
    # weights_file_path = f"{config_name}-{time_stamp}.npz"
-   weights_file_path = f"{config_name}-weights.npz"
+   # weights_file_path = f"{config_name}-weights.npz"
+   weights_file_path = f"1e-4.npz"
    results_file_path = "results.xlsx"
    load_weights = True
-   run(config_name, load_weights, weights_file_path, results_file_path)
+   # run(config_name, load_weights, weights_file_path, results_file_path)
+   run_def_lstm(config_name, load_weights, weights_file_path, results_file_path)
 
 if __name__ == "__main__":
    main()   

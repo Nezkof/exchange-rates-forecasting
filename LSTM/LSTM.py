@@ -40,70 +40,70 @@ class LSTM:
 
       return avg_loss
    
-   def fit(self, x_train, y_train, epochs, precision):
-      self.nodes = [LSTMGate(self.lstm_parameters, self.hidden_size, self.features_number) for _ in range(len(x_train))]
-
-      epoch = 0
-      eta0 = self.learning_rate
-
-      while epoch < epochs and self.loss > precision:
-         self.c_prev = np.zeros(self.hidden_size)
-         self.h_prev = np.zeros(self.hidden_size)
-         lstm_out = self.__forward(x_train)
-         self.loss = self.__backward(y_train)
-         self.lstm_parameters.update_parameters()
-
-         ## LOGGER FUNCTIONALITY
-         clear = lambda: os.system('cls')
-         clear()
-         print(f"Epoch: {epoch} ")
-         print("loss:", "%.3e" % self.loss)
-         print("lr:", "%.3e" % self.learning_rate)
-         ## 
-
-         self.learning_rate = eta0 / (1 + self.lr_decrease_speed * epoch)
-         epoch += 1
-
-   # def fit(self, x_train, y_train, epochs, precision, batch_size=64):
-   #    n_samples = len(x_train)
-   #    eta0 = self.learning_rate
+   # def fit(self, x_train, y_train, epochs, precision):
+   #    self.nodes = [LSTMGate(self.lstm_parameters, self.hidden_size, self.features_number) for _ in range(len(x_train))]
 
    #    epoch = 0
-   #    while epoch < epochs and self.loss > precision:
-   #       indices = np.arange(n_samples)
-   #       np.random.shuffle(indices)
-   #       x_train, y_train = x_train[indices], y_train[indices]
+   #    eta0 = self.learning_rate
 
-   #       self.loss = 0
+   #    while epoch < epochs and self.loss > precision:
    #       self.c_prev = np.zeros(self.hidden_size)
    #       self.h_prev = np.zeros(self.hidden_size)
+   #       lstm_out = self.__forward(x_train)
+   #       self.loss = self.__backward(y_train)
+   #       self.lstm_parameters.update_parameters()
 
-   #       for start in range(0, n_samples, batch_size):
-   #             end = min(start + batch_size, n_samples)
-   #             batch_x = x_train[start:end]
-   #             batch_y = y_train[start:end]
-
-   #             self.nodes = [LSTMGate(self.lstm_parameters, self.hidden_size, self.features_number) for _ in range(len(batch_x))]
-
-   #             lstm_out = self.__forward(batch_x)
-   #             batch_loss = self.__backward(batch_y)
-   #             self.lstm_parameters.average_parameters(len(batch_x))
-   #             self.lstm_parameters.update_parameters()
-
-   #             self.loss += batch_loss * len(batch_x)  
-
-   #       self.loss /= n_samples
-
-   #       ## LOGGER
+   #       ## LOGGER FUNCTIONALITY
    #       clear = lambda: os.system('cls')
    #       clear()
-   #       print(f"Epoch: {epoch}")
+   #       print(f"Epoch: {epoch} ")
    #       print("loss:", "%.3e" % self.loss)
    #       print("lr:", "%.3e" % self.learning_rate)
-   #       ##
+   #       ## 
 
    #       self.learning_rate = eta0 / (1 + self.lr_decrease_speed * epoch)
    #       epoch += 1
+
+   def fit(self, x_train, y_train, epochs, precision, batch_size=64):
+      n_samples = len(x_train)
+      eta0 = self.learning_rate
+
+      epoch = 0
+      while epoch < epochs and self.loss > precision:
+         indices = np.arange(n_samples)
+         np.random.shuffle(indices)
+         x_train, y_train = x_train[indices], y_train[indices]
+
+         self.loss = 0
+         self.c_prev = np.zeros(self.hidden_size)
+         self.h_prev = np.zeros(self.hidden_size)
+
+         for start in range(0, n_samples, batch_size):
+               end = min(start + batch_size, n_samples)
+               batch_x = x_train[start:end]
+               batch_y = y_train[start:end]
+
+               self.nodes = [LSTMGate(self.lstm_parameters, self.hidden_size, self.features_number) for _ in range(len(batch_x))]
+
+               lstm_out = self.__forward(batch_x)
+               batch_loss = self.__backward(batch_y)
+               self.lstm_parameters.average_parameters(len(batch_x))
+               self.lstm_parameters.update_parameters()
+
+               self.loss += batch_loss * len(batch_x)  
+
+         self.loss /= n_samples
+
+         ## LOGGER
+         clear = lambda: os.system('cls')
+         clear()
+         print(f"Epoch: {epoch}")
+         print("loss:", "%.3e" % self.loss)
+         print("lr:", "%.3e" % self.learning_rate)
+         ##
+
+         self.learning_rate = eta0 / (1 + self.lr_decrease_speed * epoch)
+         epoch += 1
 
 
    def compute(self, sequence, reset_params = False):
