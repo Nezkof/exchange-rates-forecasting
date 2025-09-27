@@ -4,11 +4,11 @@ import math
 from numpy.lib.stride_tricks import sliding_window_view
 
 class DataProcessor:
-   def __init__(self, features_number, data_length, train_length, control_length, function = None):
+   def __init__(self, features_number, data_length, control_length, function = None):
       self.function = function
       self.features_number = features_number
       self.data_length = data_length
-      self.train_length = train_length
+      self.train_length = data_length - control_length - features_number
       self.control_length = control_length
 
       self.mean = 0
@@ -100,7 +100,7 @@ class DataProcessor:
       if self.train_length + self.control_length > available_length:
          raise ValueError(f"Not enough data: need {self.train_length + self.control_length}, available {available_length}")
       
-      X, y = self.__normalize(X, y)
+      # X, y = self.__normalize(X, y)
       self.__split(X, y)
       return X, y
 

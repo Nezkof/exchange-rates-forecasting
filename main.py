@@ -1,14 +1,16 @@
 import json
 
-from EvolutionalStrategy import EvolutionalStrategy
+# from EvolutionalStrategy import EvolutionalStrategy
 
 from DataVisualizer import DataVisualizer
 from DataProcessor import DataProcessor
-from Markowitz import MarkowitzMethod
+# from Markowitz import MarkowitzMethod
 from XLSLogger import XLSLogger
 
 from trainers.CustomLSTMTrainer import CustomLSTMTrainer
-from trainers.LibLSTMTrainer import LibLSTMTrainer
+# from trainers.LibLSTMTrainer import LibLSTMTrainer
+
+# from PortfolioOptimization import PortfolioOptimization
 
 # V0.2 
 def calculate_losses(y, table_y):
@@ -36,7 +38,7 @@ def load_config(config_name):
    column_name = config["column_name"]
    hidden_size = config["hidden_size"]
    output_size = config["output_size"]
-   features_number = config["features_number"]
+   features_number = config["window_size"]
    learning_rate = config["learning_rate"]
    learning_rate_decrease_speed = config["learning_rate_decrease_speed"]
    epochs = config["epochs"]
@@ -133,17 +135,16 @@ def run_lib_lstm(
    log_results(results_path, "LibLSTM", den_control_y, den_control_results)
 
 def main():
-   csv_path = "./datasets/daily_returns.csv"
-   tickers = ['AAPL','JPM','WMT','TGT','MSFT','AMGN']
-   samples_amount = 50000 
-   tickers_amount = 5
+   # csv_path = "./datasets/daily_returns.csv"
+   # tickers = ['AAPL','JPM','WMT','TGT','MSFT','AMGN']
+   # samples_amount = 50000 
+   # tickers_amount = 5
 
-   test = MarkowitzMethod(csv_path, tickers)
-   test.optimize(samples_amount, tickers_amount)
+   # test = MarkowitzMethod(csv_path, tickers)
+   # test.optimize(samples_amount, tickers_amount)
 
-   # config_name = "usd-eur"
-
-   # csv_path, weights_path, results_path, column_name, load_weights, hidden_size, output_size, window_size, batch_size, learning_rate, learning_rate_decrease_speed, epochs, precision, data_length, control_length, optimizer = load_config(config_name)
+   config_name = "usd-eur"
+   csv_path, weights_path, results_path, column_name, load_weights, hidden_size, output_size, window_size, batch_size, learning_rate, learning_rate_decrease_speed, epochs, precision, data_length, control_length, optimizer = load_config(config_name)
    
    # run_lib_lstm(
    #    csv_path, results_path, column_name,
@@ -151,13 +152,20 @@ def main():
    #    window_size, epochs, batch_size, hidden_size, output_size
    # )
    
-   # run_custom_lstm(
-   #    load_weights,
-   #    config_name, csv_path, results_path, weights_path, column_name,
-   #    data_length, control_length, 
-   #    optimizer, 
-   #    window_size, hidden_size, output_size, learning_rate, learning_rate_decrease_speed, epochs, precision
+   run_custom_lstm(
+      load_weights,
+      config_name, csv_path, results_path, weights_path, column_name,
+      data_length, control_length, 
+      optimizer, 
+      window_size, hidden_size, output_size, learning_rate, learning_rate_decrease_speed, epochs, precision
+   )
+
+   # portfolio_optimization = PortfolioOptimization(
+   #    lstm_config_name = "usd-eur",
+   #    history_data_path = "./datasets/UAH_History_Data.csv", daily_returns_path="./datasets/UAH_History_Returns.csv", weights_path="",
+   #    tickers=['CNY','EUR','USD']
    # )
+   # portfolio_optimization.predict_rates()
 
 if __name__ == "__main__":
    main()   
