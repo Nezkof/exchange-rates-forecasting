@@ -10,7 +10,7 @@ from XLSLogger import XLSLogger
 from trainers.CustomLSTMTrainer import CustomLSTMTrainer
 # from trainers.LibLSTMTrainer import LibLSTMTrainer
 
-# from PortfolioOptimization import PortfolioOptimization
+from PortfolioOptimization import PortfolioOptimization
 
 # V0.2 
 def calculate_losses(y, table_y):
@@ -53,12 +53,12 @@ def load_config(config_name):
    return csv_path, weights_path, results_path, column_name, load_weights, hidden_size, output_size, features_number, batch_size, learning_rate, learning_rate_decrease_speed, epochs, precision, data_length, control_length, optimizer
 
 def visualize_data(
-      window_size, train_length, control_length,
+      window_size, 
       den_train_results, den_train_y, den_control_results, den_control_y, den_pure_control_results
    ):
    train_x = range(window_size, window_size + len(den_train_results))
    control_x = range(len(den_train_results) + window_size, window_size + len(den_train_results) + len(den_control_results))
-   data_visualizer = DataVisualizer(window_size, train_length, control_length)
+   data_visualizer = DataVisualizer()
    data_visualizer.add_data(train_x, den_train_results, 'blue', 'X', "Train Results")
    data_visualizer.add_data(train_x, den_train_y, 'red', 'o', "Expected Train Results")
    data_visualizer.add_data(control_x, den_control_results, 'lightblue', 'X', "Control Results")
@@ -78,10 +78,9 @@ def run_custom_lstm(
       optimizer, 
       window_size, hidden_size, output_size, learning_rate, learning_rate_decrease_speed, epochs, precision
 ):
-   weights_path = f"{weights_path}{optimizer}-{config_name}.npz"
    train_length = data_length - control_length - window_size
 
-   data_processor = DataProcessor(window_size, data_length, train_length, control_length)
+   data_processor = DataProcessor(window_size, data_length, control_length)
    X_train, Y_train, X_control, Y_control = form_data(data_processor, csv_path, column_name)
 
    custom_lstm_trainer = CustomLSTMTrainer(
@@ -98,16 +97,20 @@ def run_custom_lstm(
 
    train_results, pure_results, control_results = custom_lstm_trainer.compute(X_train, X_control)
 
-   den_train_y = data_processor.denormalize(Y_train)
-   den_control_y = data_processor.denormalize(Y_control)
-   den_train_results = data_processor.denormalize(train_results)
-   den_control_results = data_processor.denormalize(control_results)
-   den_pure_control_results = data_processor.denormalize(pure_results)
+   # den_train_y = data_processor.denormalize(Y_train)
+   # den_control_y = data_processor.denormalize(Y_control)
+   # den_train_results = data_processor.denormalize(train_results)
+   # den_control_results = data_processor.denormalize(control_results)
+   # den_pure_control_results = data_processor.denormalize(pure_results)
 
-   log_results(results_path, optimizer, den_control_y, den_control_results, den_pure_control_results)
+   # log_results(results_path, optimizer, den_control_y, den_control_results, den_pure_control_results)
+   # visualize_data(
+   #    window_size, 
+   #    den_train_results, den_train_y, den_control_results, den_control_y, den_pure_control_results
+   # )
    visualize_data(
-      window_size, train_length, control_length,
-      den_train_results, den_train_y, den_control_results, den_control_y, den_pure_control_results
+      window_size, 
+      train_results, Y_train, control_results, Y_control, pure_results
    )
 
 def run_lib_lstm(
@@ -162,8 +165,9 @@ def main():
 
    # portfolio_optimization = PortfolioOptimization(
    #    lstm_config_name = "usd-eur",
-   #    history_data_path = "./datasets/UAH_History_Data.csv", daily_returns_path="./datasets/UAH_History_Returns.csv", weights_path="",
-   #    tickers=['CNY','EUR','USD']
+   #    history_data_path = "./datasets/UAH_History_Data.csv", daily_returns_path="./datasets/UAH_History_Returns.csv", weights_path="./results/weights/",
+   #    # tickers=['CNY','EUR','USD']
+   #    tickers=['USD']
    # )
    # portfolio_optimization.predict_rates()
 

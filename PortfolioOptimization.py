@@ -1,3 +1,4 @@
+from DataVisualizer import DataVisualizer
 from helpers.helpers import load_file
 
 from Markowitz import MarkowitzMethod
@@ -23,6 +24,7 @@ class PortfolioOptimization:
       self.samples_amount = 50000
 
       self.data_processor = DataProcessor(self.lstm_config["window_size"], self.lstm_config["data_length"], self.lstm_config["control_length"])
+      self.data_visualizer = DataVisualizer()
       self.dataset = {}
       self.predictions_results = {}
 
@@ -87,18 +89,50 @@ class PortfolioOptimization:
       )
 
       for ticker, data in self.dataset.items():
+         print(ticker)
          X_train, X_control = data["train"], data["control"]
-         self.weights_path = f"{self.weights_path}{self.lstm_config["optimizer"]}-{ticker}.npz"
-         custom_lstm_trainer.set_params(self.weights_path)
+         optimizer = self.lstm_config["optimizer"]
+         weights_path = f"{self.weights_path}{optimizer}-{ticker}.npz"
+         custom_lstm_trainer.set_params(weights_path)
          train_results, pure_results, control_results = custom_lstm_trainer.compute(X_train, X_control)
 
-         self.predictions_results[ticker] = {
-            "pure": self.data_processor.denormalize(pure_results),
-            "control": self.data_processor.denormalize(control_results)
-         }
+         den_train_y = X_train
+         den_control_y = X_control
+         den_train_results = train_results
+         den_control_results = control_results
+         den_pure_control_results = pure_results
+         
+         train_x = range(self.lstm_config['window_size'], self.lstm_config['window_size'] + len(den_train_results))
+         control_x = range(len(den_train_results) + self.lstm_config['window_size'], self.lstm_config['window_size'] + len(den_train_results) + len(den_control_results))
+         self.data_visualizer.add_data(train_x, den_train_results, 'blue', 'X', "Train Results")
+         self.data_visualizer.add_data(train_x, den_train_y, 'red', 'o', "Expected Train Results")
+         self.data_visualizer.add_data(control_x, den_control_results, 'lightblue', 'X', "Control Results")
+         self.data_visualizer.add_data(control_x, den_control_y, 'pink', 'o', "Expected Control Results")
+         self.data_visualizer.add_data(control_x, den_pure_control_results, 'yellow', 'o', "Pure Control Results")
+         self.data_visualizer.build_plot()
 
-      self._write_predicted_dataset()
-      self._write_daily_returns()
+         # self.predictions_results[ticker] = {
+         #    "pure": self.data_processor.denormalize(pure_results),
+         #    "control": self.data_processor.denormalize(control_results)
+         # }
+
+         # self.data_visualizer.add_subplot(
+         #    label=ticker,
+         #    data = [
+         #       [train_x, den_train_results, 'blue', 'X', "Train Results"],
+         #       [train_x, den_train_y, 'red', 'o', "Expected Train Results"],
+         #       [control_x, self.predictions_results[ticker]["control"], 'lightblue', 'X', "Control Results"],
+         #       [control_x, den_control_y, 'pink', 'o', "Expected Control Results"],
+         #       [control_x, self.predictions_results[ticker]['pure'], 'yellow', 'o', "Pure Control Results"]
+         #    ]
+         # )
+
+
+      # self.data_visualizer.build_subplots()
+
+
+      # self._write_predicted_dataset()
+      # self._write_daily_returns()
 
    def calculate_daily_returns(self):
       pass

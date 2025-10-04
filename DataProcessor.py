@@ -100,7 +100,7 @@ class DataProcessor:
       if self.train_length + self.control_length > available_length:
          raise ValueError(f"Not enough data: need {self.train_length + self.control_length}, available {available_length}")
       
-      # X, y = self.__normalize(X, y)
+      X, y = self.__normalize(X, y)
       self.__split(X, y)
       return X, y
 
