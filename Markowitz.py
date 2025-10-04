@@ -9,7 +9,8 @@ class MarkowitzMethod:
       self.tickers = tickers
 
    def prepare_data(self):
-      self.daily_returns = pd.read_csv(self.path, index_col=0, usecols=["date"] + self.tickers)
+      self.daily_returns = pd.read_csv(self.path, index_col=0, usecols=["DATE"] + self.tickers)
+      print(self.daily_returns)
       self.mean_annual_returns = (1 + self.daily_returns.mean())**252 - 1
       self.cov = self.daily_returns.cov()*252
 

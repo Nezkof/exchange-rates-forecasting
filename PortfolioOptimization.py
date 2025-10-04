@@ -4,8 +4,7 @@ from helpers.helpers import load_file
 from Markowitz import MarkowitzMethod
 from trainers.CustomLSTMTrainer import CustomLSTMTrainer
 from DataProcessor import DataProcessor
-
-import pandas as pd
+from CSVHandler import CSVHandler
 
 class PortfolioOptimization:
    def __init__(
@@ -57,26 +56,15 @@ class PortfolioOptimization:
          self.dataset[ticker] = {"train": X_train, "control": X_control}
 
    def _write_predicted_dataset(self):
-      df = pd.read_csv(self.history_data_path, parse_dates=["DATE"])
-      N = self.lstm_config["control_length"]
+      CSVHandler.add_to_csv_file(self.history_data_path, self.predictions_results, "control")
 
-      for ticker, preds in self.predictions_results.items():
-         df[f"{ticker}_pure"] = df[ticker].copy()
-         df[f"{ticker}_control"] = df[ticker].copy()
+   def _process_daily_returns(self):
+      dates, data = CSVHandler.read_csv_all_columns(self.lstm_config['data_length'], self.history_data_path)
+      daily_returns_dict = {}
+      for col, values in data.items():
+         daily_returns_dict[col] = (values[1:] - values[:-1]) / values[:-1]
 
-         df.loc[:N-1, f"{ticker}_pure"] = preds["pure"][:N]
-         df.loc[:N-1, f"{ticker}_control"] = preds["control"][:N]
-
-      df.to_csv("./datasets/UAH_History_Data_Updated.csv", index=False)
-
-   def _write_daily_returns(self):
-      df = pd.read_csv("./datasets/UAH_History_Data_Updated.csv", parse_dates=["DATE"])
-      df = df.sort_values("DATE")
-      daily_returns = df.copy()
-      for col in ["CNY", "EUR", "USD"]:
-         daily_returns[col] = df[col].pct_change()  
-      daily_returns = daily_returns.dropna().reset_index(drop=True)
-      daily_returns.to_csv(self.daily_returns_path, index=False)
+      CSVHandler.write_csv_all_columns(daily_returns_dict, dates, self.daily_returns_path)
 
    def predict_rates(self):
       self._read_dataset()
@@ -94,48 +82,31 @@ class PortfolioOptimization:
          optimizer = self.lstm_config["optimizer"]
          weights_path = f"{self.weights_path}{optimizer}-{ticker}.npz"
          custom_lstm_trainer.set_params(weights_path)
+
          train_results, pure_results, control_results = custom_lstm_trainer.compute(X_train, X_control)
 
-         den_train_y = X_train
-         den_control_y = X_control
-         den_train_results = train_results
-         den_control_results = control_results
-         den_pure_control_results = pure_results
-         
-         train_x = range(self.lstm_config['window_size'], self.lstm_config['window_size'] + len(den_train_results))
-         control_x = range(len(den_train_results) + self.lstm_config['window_size'], self.lstm_config['window_size'] + len(den_train_results) + len(den_control_results))
-         self.data_visualizer.add_data(train_x, den_train_results, 'blue', 'X', "Train Results")
-         self.data_visualizer.add_data(train_x, den_train_y, 'red', 'o', "Expected Train Results")
-         self.data_visualizer.add_data(control_x, den_control_results, 'lightblue', 'X', "Control Results")
-         self.data_visualizer.add_data(control_x, den_control_y, 'pink', 'o', "Expected Control Results")
-         self.data_visualizer.add_data(control_x, den_pure_control_results, 'yellow', 'o', "Pure Control Results")
-         self.data_visualizer.build_plot()
+         den_train_results = self.data_processor.denormalize(train_results)
 
-         # self.predictions_results[ticker] = {
-         #    "pure": self.data_processor.denormalize(pure_results),
-         #    "control": self.data_processor.denormalize(control_results)
-         # }
+         self.predictions_results[ticker] = {
+            "pure": self.data_processor.denormalize(pure_results),
+            "control": self.data_processor.denormalize(control_results)
+         }
 
-         # self.data_visualizer.add_subplot(
-         #    label=ticker,
-         #    data = [
-         #       [train_x, den_train_results, 'blue', 'X', "Train Results"],
-         #       [train_x, den_train_y, 'red', 'o', "Expected Train Results"],
-         #       [control_x, self.predictions_results[ticker]["control"], 'lightblue', 'X', "Control Results"],
-         #       [control_x, den_control_y, 'pink', 'o', "Expected Control Results"],
-         #       [control_x, self.predictions_results[ticker]['pure'], 'yellow', 'o', "Pure Control Results"]
-         #    ]
-         # )
+         dates_train = self.data_processor.get_dates()[:len(den_train_results)]
+         dates_control = self.data_processor.get_dates()[len(den_train_results):]
 
+         self.data_visualizer.add_subplot(
+            label=ticker,
+            data = [
+               [dates_train, den_train_results, 'blue', 'X', "Train Results"],
+               [dates_control, self.predictions_results[ticker]["control"], 'lightblue', 'X', "Control Results"],
+               [dates_control, self.predictions_results[ticker]['pure'], 'yellow', 'o', "Pure Control Results"]
+            ]
+         )
 
-      # self.data_visualizer.build_subplots()
-
-
-      # self._write_predicted_dataset()
-      # self._write_daily_returns()
-
-   def calculate_daily_returns(self):
-      pass
+      self.data_visualizer.build_subplots()
+      self._write_predicted_dataset()
+      self._process_daily_returns()
 
    def optimize_portfolio(self):
       optimizer = MarkowitzMethod(self.daily_returns_path, self.tickers)
