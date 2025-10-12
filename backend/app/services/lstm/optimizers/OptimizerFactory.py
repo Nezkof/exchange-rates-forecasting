@@ -1,5 +1,5 @@
-from lstm.optimizers.SGD import SGD
-from lstm.optimizers.Adam import ADAM
+from app.services.lstm.optimizers.SGD import SGD
+from app.services.lstm.optimizers.Adam import ADAM
 
 class OptimizerFactory:
     _optimizers = {

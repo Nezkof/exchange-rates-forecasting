@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from helpers.useRandom import random_array
+from app.services.helpers.useRandom import random_array
 
 class Optimizer(ABC):
    def __init__(self, hidden_size, features_number, output_size, learning_rate, bounds = [-0.05, 0.05]):

@@ -1,15 +1,14 @@
 from fastapi import APIRouter
 from app.schemas.lstm import LSTMRequest
-from app.core.lstm_trainer import run_custom_lstm
+from app.services.lstm_service import LSTMService
 
 router = APIRouter()
 
 @router.post("/train")
 def train_lstm_endpoint(request: LSTMRequest):
-   run_custom_lstm(
-      load_weights=request.load_weights,
+   print(request)
+   LSTMService.train_custom_lstm(      
       csv_path=request.csv_path,
-      results_path=request.results_path,
       weights_path=request.weights_path,
       column_name=request.column_name,
       data_length=request.data_length,
@@ -22,5 +21,5 @@ def train_lstm_endpoint(request: LSTMRequest):
       learning_rate_decrease_speed=request.learning_rate_decrease_speed,
       epochs=request.epochs,
       precision=request.precision
-   )
+      )
    return {"status": "success"}

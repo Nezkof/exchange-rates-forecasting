@@ -1,6 +1,7 @@
 import numpy as np
-from lstm.LSTM import LSTM
-from ParametersProcessor import ParametersProcessor
+
+from app.services.lstm.LSTM import LSTM
+from app.utils.parameters_processor import ParametersProcessor
 
 class CustomLSTMTrainer:
    def __init__(

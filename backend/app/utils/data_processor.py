@@ -1,9 +1,7 @@
 import numpy as np
-import csv
 import math
 from numpy.lib.stride_tricks import sliding_window_view
-
-from CSVHandler import CSVHandler
+from app.utils.csv_processor import CSVHandler
 
 class DataProcessor:
    def __init__(self, window_size, data_length, control_length, function = None):

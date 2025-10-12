@@ -1,6 +1,6 @@
 import numpy as np
 
-from helpers.useFunctions import sigmoid, sigmoid_derivative, tanh, tanh_derivative
+from app.services.helpers.useFunctions import sigmoid, sigmoid_derivative, tanh, tanh_derivative
 
 class InputGate:
    def __init__(self, parameters, hidden_size, features_number):

@@ -1,10 +1,10 @@
 import json
 
-from DataVisualizer import DataVisualizer
-from DataProcessor import DataProcessor
+from backend.app.utils.data_visualizer import DataVisualizer
+from backend.app.utils.data_processor import DataProcessor
 from XLSLogger import XLSLogger
 
-from trainers.CustomLSTMTrainer import CustomLSTMTrainer
+from backend.app.utils.trainers.custom_lstm_trainer import CustomLSTMTrainer
 # from trainers.LibLSTMTrainer import LibLSTMTrainer
 
 from PortfolioOptimization import PortfolioOptimization
@@ -71,7 +71,7 @@ def run_custom_lstm(
       optimizer, 
       window_size, hidden_size, output_size, learning_rate, learning_rate_decrease_speed, epochs, precision
 ):
-   weights_path = f"./results/weights/{weights_path}"
+   weights_path = f"./weights/{weights_path}"
    csv_path = f"./datasets/{csv_path}"
    data_processor = DataProcessor(window_size, data_length, control_length)
    data_processor.form_data_from_file(csv_path, column_name)

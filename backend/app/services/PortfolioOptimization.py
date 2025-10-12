@@ -1,10 +1,10 @@
-from DataVisualizer import DataVisualizer
+from backend.app.utils.data_visualizer import DataVisualizer
 from helpers.helpers import load_file
 
 from Markowitz import MarkowitzMethod
-from trainers.CustomLSTMTrainer import CustomLSTMTrainer
-from DataProcessor import DataProcessor
-from CSVHandler import CSVHandler
+from app.utils.trainers.custom_lstm_trainer import CustomLSTMTrainer
+from app.utils.data_processor import DataProcessor
+from app.utils.csv_processor import CSVHandler
 
 class PortfolioOptimization:
    def __init__(

@@ -1,8 +1,8 @@
 export const routes = [
    { to: "/", label: "Home" },
    { to: "/training", label: "Training" },
-   { to: "/results", label: "Results" },
-   { to: "/settings", label: "Settings" },
+   { to: "/forecasting", label: "Forecasting" },
+   { to: "/optimization", label: "Optimization" },
 ];
 
 export type Optimizer = "ADAM" | "SGD";

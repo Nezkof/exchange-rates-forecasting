@@ -32,7 +32,8 @@ a {
 
 input:focus,
 button:focus-visible,
-a:focus-visible {
+a:focus-visible,
+select:focus-visible {
    outline: 1px dashed var(--color-accent);
 }
 

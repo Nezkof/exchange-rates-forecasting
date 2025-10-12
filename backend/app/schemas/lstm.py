@@ -1,9 +1,7 @@
 from pydantic import BaseModel
 
 class LSTMRequest(BaseModel):
-   load_weights: str
    csv_path: str
-   results_path: str
    weights_path: str
    column_name: str
    data_length: int

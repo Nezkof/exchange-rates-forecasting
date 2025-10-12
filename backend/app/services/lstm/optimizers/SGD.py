@@ -1,4 +1,4 @@
-from lstm.optimizers.Optimizer import Optimizer
+from app.services.lstm.optimizers.Optimizer import Optimizer
 import numpy as np
 
 class SGD(Optimizer):

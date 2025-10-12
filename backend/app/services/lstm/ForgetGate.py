@@ -1,6 +1,6 @@
 import numpy as np
+from app.services.helpers.useFunctions import sigmoid, sigmoid_derivative, tanh
 
-from helpers.useFunctions import sigmoid, sigmoid_derivative, tanh
 class ForgetGate: 
    def __init__(self, parameters, hidden_size, features_number):
       np.random.seed(0)
