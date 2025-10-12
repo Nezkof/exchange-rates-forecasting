@@ -1,0 +1,10 @@
+:root {
+   --color-light: #efefef;
+   --color-dark: #121212;
+
+   --color-accent: #b08bea;
+
+   --font-family-base: "Noto Sans", sans-serif;
+
+   --transition-duration: 0.2s;
+}
