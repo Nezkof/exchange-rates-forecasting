@@ -39,6 +39,14 @@
       border-radius: 10px;
       border: none;
    }
+
+   span {
+      font-size: 14px;
+      max-width: 200px;
+      justify-self: end;
+      text-align: end;
+      color: var(--color-red);
+   }
 }
 
 .form__buttons {

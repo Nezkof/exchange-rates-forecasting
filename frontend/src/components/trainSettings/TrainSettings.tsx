@@ -6,6 +6,9 @@ import "./trainSettings.css";
 import "./form.css";
 
 import ChevronsLeft from "/icons/chevronsLeft.svg";
+import ConfigLoader from "../configLoader/ConfigLoader";
+import { useLocalConfig } from "../../hooks/useConfig";
+import { useEffect } from "react";
 
 const configSchema = z.object({
    csv_path: z.string(),
@@ -29,8 +32,8 @@ const configSchema = z.object({
 const keys = Object.keys(configSchema.shape);
 
 const labelsMap: Record<string, string> = {
-   csv_path: "CSV Path",
-   weights_path: "Weights Path",
+   csv_path: "CSV name",
+   weights_path: "Weights name",
    column_name: "Column Name",
    hidden_size: "Hidden Size",
    output_size: "Output Size",
@@ -59,13 +62,21 @@ const TrainSettings = ({ settingsButton }: Props) => {
       register,
       handleSubmit,
       formState: { errors },
+      reset,
    } = useForm<Config>({
       resolver: zodResolver(configSchema),
-      // defaultValues: initialConfig,
    });
 
+   const { config: loadedConfig } = useLocalConfig();
+
+   useEffect(() => {
+      if (loadedConfig) {
+         reset(loadedConfig);
+      }
+   }, [loadedConfig, reset]);
+
    const onSubmit = (data: Config) => {
-      console.log("✅ Config saved:", data);
+      console.log("Submit", data);
    };
 
    return (
@@ -84,19 +95,15 @@ const TrainSettings = ({ settingsButton }: Props) => {
                <div className="form__item" key={key}>
                   <label>{labelsMap[key] || key}</label>
                   <input {...register(key as keyof Config)} />
-                  {errors[key as keyof Config] && <p>{errors[key as keyof Config]?.message}</p>}
+                  {errors[key as keyof Config] && (
+                     <span>{errors[key as keyof Config]?.message}</span>
+                  )}
                </div>
             ))}
 
             <div className="form__buttons">
-               <button type="button">Train</button>
-               <button type="submit">Save config</button>
-               <button
-                  type="button"
-                  // onClick={onLoad}
-               >
-                  Load config
-               </button>
+               <button type="submit">Train</button>
+               <ConfigLoader onConfigLoad={(cfg) => reset(cfg)} />
             </div>
          </form>
       </aside>

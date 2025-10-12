@@ -4,3 +4,22 @@ export const routes = [
    { to: "/results", label: "Results" },
    { to: "/settings", label: "Settings" },
 ];
+
+export type Optimizer = "ADAM" | "SGD";
+
+export interface Config {
+   csv_path: string;
+   weights_path: string;
+   column_name: string;
+   hidden_size: number;
+   output_size: number;
+   window_size: number;
+   batch_size: number;
+   learning_rate: number;
+   learning_rate_decrease_speed: number;
+   epochs: number;
+   precision: number;
+   optimizer: Optimizer;
+   data_length: number;
+   control_length: number;
+}

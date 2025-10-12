@@ -5,7 +5,7 @@ import "./trainingPage.css";
 import ChevronsLeft from "/icons/chevronsLeft.svg";
 
 const TrainingPage = () => {
-   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(true);
 
    const handleSettingsButton = () => {
       setIsSettingsOpen(!isSettingsOpen);
