@@ -1,9 +1,16 @@
+body {
+   overflow-x: hidden;
+}
+
 main {
    min-width: 100%;
    min-height: 100vh;
 
    font-family: var(--font-family-base);
+   color: var(--color-light);
    background-color: var(--color-dark);
+
+   display: flex;
 }
 
 a,
@@ -21,4 +28,19 @@ a {
    &[class] {
       text-decoration: none;
    }
+}
+
+input:focus,
+button:focus-visible,
+a:focus-visible {
+   outline: 1px dashed var(--color-accent);
+}
+
+button:hover {
+   background-color: var(--color-dark-10);
+}
+
+input,
+button {
+   color: var(--color-light);
 }

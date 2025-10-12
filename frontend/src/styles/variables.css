@@ -1,8 +1,12 @@
 :root {
    --color-light: #efefef;
+   --color-light-10: #3a3a3a;
    --color-dark: #121212;
+   --color-dark-10: #161616;
+   --color-dark-20: hsl(0, 0%, 8%);
 
    --color-accent: #b08bea;
+   --color-accent-10: #251f2d;
 
    --font-family-base: "Noto Sans", sans-serif;
 
