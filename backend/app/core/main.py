@@ -21,7 +21,7 @@ def calculate_losses(y, table_y):
    return float(mae), float(rmse), float(mape)
 
 def load_config(config_name):
-   path = f"./configs/{config_name}.json"
+   path = f"./backend/configs/{config_name}.json"
    with open(path, 'r') as file:
       config = json.load(file)
    
@@ -71,6 +71,8 @@ def run_custom_lstm(
       optimizer, 
       window_size, hidden_size, output_size, learning_rate, learning_rate_decrease_speed, epochs, precision
 ):
+   weights_path = f"./results/weights/{weights_path}"
+   csv_path = f"./datasets/{csv_path}"
    data_processor = DataProcessor(window_size, data_length, control_length)
    data_processor.form_data_from_file(csv_path, column_name)
    X_train, Y_train, X_control, Y_control = data_processor.split_data_table()
@@ -152,6 +154,6 @@ def main():
    # portfolio_optimization.predict_rates()
    # portfolio_optimization.optimize_portfolio()
 
-# if __name__ == "__main__":
-#    main()   
+if __name__ == "__main__":
+   main()   
 

@@ -1,5 +1,5 @@
 import numpy as np
-from LSTM.LSTM import LSTM
+from lstm.LSTM import LSTM
 from ParametersProcessor import ParametersProcessor
 
 class CustomLSTMTrainer:

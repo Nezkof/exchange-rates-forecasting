@@ -1,9 +1,9 @@
 import numpy as np
-from LSTM.DenseLayer import DenseLayer
-from LSTM.ForgetGate import ForgetGate
-from LSTM.InputGate import InputGate
-from LSTM.LossLayer import LossLayer
-from LSTM.OutputGate import OutputGate
+from lstm.DenseLayer import DenseLayer
+from lstm.ForgetGate import ForgetGate
+from lstm.InputGate import InputGate
+from lstm.LossLayer import LossLayer
+from lstm.OutputGate import OutputGate
 from helpers.useFunctions import sigmoid_derivative, tanh, tanh_derivative
 
 

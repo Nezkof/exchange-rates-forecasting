@@ -1,9 +1,9 @@
 {
-   "csv_path": "./datasets/UAH_Daily_Returns.csv",
-   "weights_path": "./results/weights/ADAM-CNY.npz",
+   "csv_path": "UAH_Daily_Returns.csv",
+   "weights_path": "ADAM-CNY.npz",
    "results_path": "./results/results.xlsx",
    "column_name": "CNY",
-   "load_weights": "False",
+   "load_weights": "True",
 
    "hidden_size": 256,
    "output_size": 1,
