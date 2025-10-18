@@ -80,6 +80,7 @@ class DataProcessor:
       if (has_missing):
          values = self._fill_empties(values)
          CSVHandler.write_csv_file(values, path, column_name)
+         print("written")
       X, y = self._generate_sequences(values)
 
       available_length = len(X)

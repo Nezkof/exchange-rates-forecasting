@@ -5,19 +5,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import "./trainSettings.css";
 import "./form.css";
 
-import ChevronsLeft from "/icons/chevronsLeft.svg";
 import ConfigLoader from "../configLoader/ConfigLoader";
 import { useLocalConfig } from "../../hooks/useConfig";
 import { useEffect } from "react";
-import FetchService from "../../services/fetchService/FetchService";
+import type { SettingsConfig } from "../../types/lstm";
+import SettingsButton from "../settingsButton/SettingsButton";
 
 const configSchema = z.object({
-   csv_path: z.string(),
-   weights_path: z.string(),
+   csv_type: z.enum(["Returns", "Data"]),
    column_name: z.string(),
-
    hidden_size: z.number().int().min(1),
-   output_size: z.number().int().min(1),
    window_size: z.number().int().min(1),
    batch_size: z.number().int().min(1),
    learning_rate: z.number().positive(),
@@ -37,9 +34,10 @@ interface Props {
       isSettingsOpen: boolean;
       handleButton: () => void;
    };
+   onSubmit: (data: SettingsConfig) => void;
 }
 
-const TrainSettings = ({ settingsButton }: Props) => {
+const TrainSettings = ({ settingsButton, onSubmit }: Props) => {
    const {
       register,
       handleSubmit,
@@ -57,33 +55,24 @@ const TrainSettings = ({ settingsButton }: Props) => {
       }
    }, [loadedConfig, reset]);
 
-   const onSubmit = (data: Config) => {
-      FetchService.trainModel(data);
-   };
-
    return (
       <aside
          className={`train-settings ${settingsButton.isSettingsOpen ? "train-settings--open" : ""}`}
       >
-         <button
-            className="train-settings__button train-settings__button--open"
-            onClick={settingsButton.handleButton}
-         >
-            <img src={ChevronsLeft} alt="close" />
-         </button>
+         <SettingsButton
+            isOpen={settingsButton.isSettingsOpen}
+            handleBtn={settingsButton.handleButton}
+         />
 
          <form className="train-settings__form" onSubmit={handleSubmit(onSubmit)}>
             {/* STRING FIELDS */}
             <div className="form__item">
-               <label>CSV name</label>
-               <input {...register("csv_path")} />
-               {errors.csv_path && <span>{errors.csv_path.message}</span>}
-            </div>
-
-            <div className="form__item">
-               <label>Weights name</label>
-               <input {...register("weights_path")} />
-               {errors.weights_path && <span>{errors.weights_path.message}</span>}
+               <label>CSV type</label>
+               <select {...register("csv_type")}>
+                  <option value="Returns">Returns</option>
+                  <option value="Data">Data</option>
+               </select>
+               {errors.csv_type && <span>{errors.csv_type.message}</span>}
             </div>
 
             <div className="form__item">
@@ -97,12 +86,6 @@ const TrainSettings = ({ settingsButton }: Props) => {
                <label>Hidden Size</label>
                <input type="number" {...register("hidden_size", { valueAsNumber: true })} />
                {errors.hidden_size && <span>{errors.hidden_size.message}</span>}
-            </div>
-
-            <div className="form__item">
-               <label>Output Size</label>
-               <input type="number" {...register("output_size", { valueAsNumber: true })} />
-               {errors.output_size && <span>{errors.output_size.message}</span>}
             </div>
 
             <div className="form__item">

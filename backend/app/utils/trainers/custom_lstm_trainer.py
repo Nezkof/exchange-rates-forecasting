@@ -7,9 +7,10 @@ class CustomLSTMTrainer:
    def __init__(
          self, 
          optimizer,
-         hidden_size, window_size, output_size,
+         hidden_size, window_size,
          learning_rate, learning_rate_decrease_speed,
-         weights_path
+         weights_path,
+         output_size = 1
       ):
       self.lstm = LSTM (
          optimizer, 
