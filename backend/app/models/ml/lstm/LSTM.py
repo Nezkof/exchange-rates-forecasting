@@ -1,7 +1,8 @@
 import os
 import numpy as np
-from app.services.lstm.LSTMGate import LSTMGate
-from app.services.lstm.optimizers.OptimizerFactory import OptimizerFactory
+
+from app.models.ml.lstm import LSTMGate
+from app.models.ml.lstm.optimizers import OptimizerFactory
 
 class LSTM: 
    def __init__(self, optimizer_type, hidden_size, features_number, output_size, learning_rate, lr_decrease_speed):      

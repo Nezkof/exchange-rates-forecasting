@@ -19,12 +19,10 @@ def train_lstm_endpoint(request: LSTMTrainRequest):
       epochs=request.epochs,
       precision=request.precision
       )
-   
    return response 
 
 @router.post("/forecast")
 def forecast_lstm_endpoint(request: LSTMForecastRequest):
-   print(request)
    response = LSTMService.forecast_custom(
       csv_type=request.csv_type,
       column_name=request.column_name,

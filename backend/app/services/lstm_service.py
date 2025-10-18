@@ -5,7 +5,7 @@ from app.utils.data_processor import DataProcessor
 from app.utils.trainers.custom_lstm_trainer import CustomLSTMTrainer
 from app.schemas.lstm import ControlResults, DatasetResults, LSTMTrainingResponse, LSTMForecastResponse
 from app.schemas.metrics import Metrics
-from app.services.helpers.helpers import calculate_losses
+from app.utils.helpers import calculate_losses
 
 class LSTMService:
    @staticmethod
@@ -41,7 +41,7 @@ class LSTMService:
       learning_rate_decrease_speed: float,
       epochs: int,
       precision: float,
-   ) -> None:
+   ) -> LSTMTrainingResponse:
       csv_path = DATASETS_DIR / f"UAH_History_{csv_type}.csv"
       weights_path = WEIGHTS_DIR / f"{optimizer}-{column_name}.npz"
 
@@ -81,7 +81,6 @@ class LSTMService:
          )
       )
 
-
    @staticmethod
    def forecast_custom(
       csv_type: str,
@@ -93,7 +92,7 @@ class LSTMService:
       hidden_size: int,
       learning_rate = 0.1,
       learning_rate_decrease_speed = 0.1,
-   ) -> None:
+   ) -> LSTMForecastResponse:
       csv_path = DATASETS_DIR / f"UAH_History_{csv_type}.csv"
       weights_path = WEIGHTS_DIR / f"{optimizer}-{column_name}.npz"
 

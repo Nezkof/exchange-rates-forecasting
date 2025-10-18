@@ -1,5 +1,6 @@
-from app.services.lstm.optimizers.Optimizer import Optimizer
 import numpy as np
+
+from app.models.ml.lstm.optimizers.Optimizer import Optimizer
 
 class ADAM(Optimizer):
    def __init__(self, hidden_size, features_number, output_size, learning_rate, bounds = [-0.05, 0.05]):

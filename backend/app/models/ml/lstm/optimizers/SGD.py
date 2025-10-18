@@ -1,5 +1,6 @@
-from app.services.lstm.optimizers.Optimizer import Optimizer
 import numpy as np
+
+from app.models.ml.lstm.optimizers.Optimizer import Optimizer
 
 class SGD(Optimizer):
    def _init_parameters(self):

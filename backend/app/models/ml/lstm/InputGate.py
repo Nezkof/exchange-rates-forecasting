@@ -1,6 +1,6 @@
 import numpy as np
 
-from app.services.helpers.useFunctions import sigmoid, sigmoid_derivative, tanh, tanh_derivative
+from app.utils.use_functions import sigmoid, sigmoid_derivative, tanh_derivative
 
 class InputGate:
    def __init__(self, parameters, hidden_size, features_number):
@@ -22,7 +22,7 @@ class InputGate:
       self.i_out = sigmoid(
          np.dot(self.parameters.get_i_weights(), self.xc) + self.parameters.get_i_biases()
       )
-      self.s_out = tanh(
+      self.s_out = np.tanh(
          np.dot(self.parameters.get_s_weights(), self.xc) + self.parameters.get_s_biases()
       )
 

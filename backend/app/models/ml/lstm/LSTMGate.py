@@ -1,10 +1,7 @@
 import numpy as np
-from app.services.lstm.DenseLayer import DenseLayer
-from app.services.lstm.ForgetGate import ForgetGate
-from app.services.lstm.InputGate import InputGate
-from app.services.lstm.LossLayer import LossLayer
-from app.services.lstm.OutputGate import OutputGate
-from app.services.helpers.useFunctions import sigmoid_derivative, tanh, tanh_derivative
+
+from app.models.ml.lstm import DenseLayer, ForgetGate, InputGate, LossLayer, OutputGate
+from app.utils.use_functions import tanh
 
 
 class LSTMGate:
