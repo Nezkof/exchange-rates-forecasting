@@ -4,4 +4,3 @@ export const routes = [
    { to: "/forecasting", label: "Forecasting" },
    { to: "/optimization", label: "Optimization" },
 ];
-

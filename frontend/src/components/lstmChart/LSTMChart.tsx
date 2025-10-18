@@ -1,7 +1,7 @@
 import { Line } from "react-chartjs-2";
 import type { LSTMTrainingResponse } from "../../types/lstm";
 import { useRef } from "react";
-import type { ChartJSOrUndefined } from "react-chartjs-2/dist/types";
+import type { Chart as ChartJS } from "chart.js";
 
 import "./lstmChart.css";
 
@@ -10,7 +10,7 @@ interface LSTMChartProps {
 }
 
 export function LSTMChart({ data }: LSTMChartProps) {
-   const chartRef = useRef<ChartJSOrUndefined<"line">>(null);
+   const chartRef = useRef<ChartJS | null>(null);
 
    const chartData = {
       labels: [...data.train.dates, ...data.control.dates],

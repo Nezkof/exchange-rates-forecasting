@@ -3,7 +3,7 @@ import TrainSettings from "../../components/trainSettings/TrainSettings";
 import "./trainingPage.css";
 
 import FetchService from "../../services/fetchService/FetchService";
-import type { SettingsConfig } from "../../types/lstm";
+import type { TrainConfig } from "../../types/lstm";
 import { useMutation } from "@tanstack/react-query";
 import { LSTMChart } from "../../components/lstmChart/LSTMChart";
 import SettingsButton from "../../components/settingsButton/SettingsButton";
@@ -18,22 +18,13 @@ const TrainingPage = () => {
    };
 
    const mutation = useMutation({
-      mutationFn: (config: SettingsConfig) => FetchService.trainModel(config),
+      mutationFn: (config: TrainConfig) => FetchService.train(config),
    });
 
-   const onSubmit = (data: SettingsConfig) => {
+   const onSubmit = (data: TrainConfig) => {
       mutation.mutate(data);
    };
 
-   useEffect(() => {
-      console.log("Mutation status:", {
-         isSuccess: mutation.isSuccess,
-         isPending: mutation.isPending,
-         isError: mutation.isError,
-         data: mutation.data,
-         error: mutation.error,
-      });
-   }, [mutation.isSuccess, mutation.isPending, mutation.isError, mutation.data]);
    return (
       <>
          <section className="page training-page">

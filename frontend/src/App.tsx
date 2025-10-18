@@ -12,6 +12,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 
 import "./config/chartConfig";
 import queryClient from "./config/queryClientConfig";
+import { routes } from "./types/routes";
+import ForecastingPage from "./pages/forecasting/ForecastingPage";
 
 const App = () => {
    return (
@@ -21,7 +23,8 @@ const App = () => {
                <main>
                   <NavigationMenu />
                   <Routes>
-                     <Route path="/" element={<TrainingPage />} />
+                     <Route path={routes[1].to} element={<TrainingPage />} />
+                     <Route path={routes[2].to} element={<ForecastingPage />} />
                   </Routes>
                </main>
             </BrowserRouter>

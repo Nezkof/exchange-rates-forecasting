@@ -1,40 +1,33 @@
+import "./forecastSettings.css";
+import "./form.css";
+
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import "./trainSettings.css";
-import "./form.css";
-
 import ConfigLoader from "../configLoader/ConfigLoader";
 import { useLocalConfig } from "../../hooks/useConfig";
 import { useEffect } from "react";
-import type { TrainConfig } from "../../types/lstm";
+import type { ForecastConfig } from "../../types/lstm";
 import SettingsButton from "../settingsButton/SettingsButton";
 
 const configSchema = z.object({
    csv_type: z.enum(["Returns", "Data"]),
    column_name: z.string(),
-   hidden_size: z.number().int().min(1),
-   window_size: z.number().int().min(1),
-   batch_size: z.number().int().min(1),
-   learning_rate: z.number().positive(),
-   learning_rate_decrease_speed: z.number().positive(),
-   epochs: z.number().int().min(1),
-   precision: z.number().positive(),
-   optimizer: z.enum(["ADAM", "SGD"]),
-
    data_length: z.number().int().min(1),
    control_length: z.number().int().min(1),
+   optimizer: z.enum(["ADAM", "SGD"]),
+   window_size: z.number().int().min(1),
+   hidden_size: z.number().int().min(1),
 });
 
 type Config = z.infer<typeof configSchema>;
 
 interface Props {
    settingsButton: {
-      isSettingsOpen: boolean;
+      isOpen: boolean;
       handleButton: () => void;
    };
-   onSubmit: (data: TrainConfig) => void;
+   onSubmit: (data: ForecastConfig) => void;
 }
 
 const TrainSettings = ({ settingsButton, onSubmit }: Props) => {
@@ -56,13 +49,8 @@ const TrainSettings = ({ settingsButton, onSubmit }: Props) => {
    }, [loadedConfig, reset]);
 
    return (
-      <aside
-         className={`train-settings ${settingsButton.isSettingsOpen ? "train-settings--open" : ""}`}
-      >
-         <SettingsButton
-            isOpen={settingsButton.isSettingsOpen}
-            handleBtn={settingsButton.handleButton}
-         />
+      <aside className={`train-settings ${settingsButton.isOpen ? "train-settings--open" : ""}`}>
+         <SettingsButton isOpen={settingsButton.isOpen} handleBtn={settingsButton.handleButton} />
 
          <form className="train-settings__form" onSubmit={handleSubmit(onSubmit)}>
             {/* STRING FIELDS */}
@@ -95,50 +83,6 @@ const TrainSettings = ({ settingsButton, onSubmit }: Props) => {
             </div>
 
             <div className="form__item">
-               <label>Batch Size</label>
-               <input type="number" {...register("batch_size", { valueAsNumber: true })} />
-               {errors.batch_size && <span>{errors.batch_size.message}</span>}
-            </div>
-
-            <div className="form__item">
-               <label>Learning Rate</label>
-               <input
-                  type="number"
-                  step="any"
-                  {...register("learning_rate", { valueAsNumber: true })}
-               />
-               {errors.learning_rate && <span>{errors.learning_rate.message}</span>}
-            </div>
-
-            <div className="form__item">
-               <label>Learning Rate Decrease Speed</label>
-               <input
-                  type="number"
-                  step="any"
-                  {...register("learning_rate_decrease_speed", { valueAsNumber: true })}
-               />
-               {errors.learning_rate_decrease_speed && (
-                  <span>{errors.learning_rate_decrease_speed.message}</span>
-               )}
-            </div>
-
-            <div className="form__item">
-               <label>Epochs</label>
-               <input type="number" {...register("epochs", { valueAsNumber: true })} />
-               {errors.epochs && <span>{errors.epochs.message}</span>}
-            </div>
-
-            <div className="form__item">
-               <label>Precision</label>
-               <input
-                  type="number"
-                  step="any"
-                  {...register("precision", { valueAsNumber: true })}
-               />
-               {errors.precision && <span>{errors.precision.message}</span>}
-            </div>
-
-            <div className="form__item">
                <label>Optimizer</label>
                <select {...register("optimizer")}>
                   <option value="ADAM">ADAM</option>
@@ -160,7 +104,7 @@ const TrainSettings = ({ settingsButton, onSubmit }: Props) => {
             </div>
 
             <div className="form__buttons">
-               <button type="submit">Train</button>
+               <button type="submit">Forecast</button>
                <ConfigLoader onConfigLoad={(cfg) => reset(cfg)} />
             </div>
          </form>

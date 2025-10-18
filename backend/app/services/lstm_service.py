@@ -3,8 +3,9 @@ import numpy as np
 from typing import List
 from app.utils.data_processor import DataProcessor
 from app.utils.trainers.custom_lstm_trainer import CustomLSTMTrainer
-from app.utils.data_visualizer import DataVisualizer
-from app.schemas.lstm import ControlResults, DatasetResults, LSTMTrainingResponse
+from app.schemas.lstm import ControlResults, DatasetResults, LSTMTrainingResponse, LSTMForecastResponse
+from app.schemas.metrics import Metrics
+from app.services.helpers.helpers import calculate_losses
 
 class LSTMService:
    @staticmethod
@@ -28,7 +29,7 @@ class LSTMService:
       return [str(x) for x in arr]
 
    @staticmethod
-   def train_custom_lstm(
+   def train_custom(
       csv_type: str,
       column_name: str,
       data_length: int,
@@ -81,3 +82,63 @@ class LSTMService:
       )
 
 
+   @staticmethod
+   def forecast_custom(
+      csv_type: str,
+      column_name: str,
+      data_length: int,
+      control_length: int,
+      optimizer: str,
+      window_size: int,
+      hidden_size: int,
+      learning_rate = 0.1,
+      learning_rate_decrease_speed = 0.1,
+   ) -> None:
+      csv_path = DATASETS_DIR / f"UAH_History_{csv_type}.csv"
+      weights_path = WEIGHTS_DIR / f"{optimizer}-{column_name}.npz"
+
+      data_processor = DataProcessor(window_size, data_length, control_length)
+      data_processor.form_data_from_file(csv_path, column_name)
+      X_train, Y_train, X_control, Y_control = data_processor.split_data_table()
+
+      custom_lstm_trainer = CustomLSTMTrainer(
+         optimizer,
+         hidden_size, window_size,
+         learning_rate, learning_rate_decrease_speed,
+         weights_path 
+      )
+
+      custom_lstm_trainer.set_params(weights_path)
+
+      train_results, pure_results, control_results = custom_lstm_trainer.compute(X_train, X_control)
+
+      den_train_y = data_processor.denormalize(Y_train)
+      den_control_y = data_processor.denormalize(Y_control)
+      den_train_results = data_processor.denormalize(train_results)
+      den_control_results = data_processor.denormalize(control_results)
+      den_pure_control_results = data_processor.denormalize(pure_results)
+      dates = data_processor.get_dates()
+
+      dates_train = dates[:len(den_train_results)]
+      dates_control = dates[len(den_train_results):]
+
+      MAE, RMSE, MAPE = calculate_losses(control_results, Y_control)
+
+      return LSTMForecastResponse(
+         train=DatasetResults(
+            dates=LSTMService._flatten_to_string(dates_train),
+            results=LSTMService._flatten_to_float(den_train_results),
+            expected=LSTMService._flatten_to_float(den_train_y)
+         ),
+         control=ControlResults(
+            dates=LSTMService._flatten_to_string(dates_control),
+            results=LSTMService._flatten_to_float(den_control_results),
+            expected=LSTMService._flatten_to_float(den_control_y),
+            pure=LSTMService._flatten_to_float(den_pure_control_results)
+         ),
+         metrics=Metrics(
+            MAE=MAE,
+            RMSE=RMSE,
+            MAPE=MAPE
+         )
+      )
