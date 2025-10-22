@@ -59,8 +59,8 @@ class CSVHandler:
          writer.writerows(all_rows)
 
    @staticmethod
-   def add_to_csv_file(path, prediction_results, result_type="control"):
-      with open(path, mode='r', encoding='utf-8') as file:
+   def add_to_csv_file(path_source, path_dest, prediction_results, result_type="control"):
+      with open(path_source, mode='r', encoding='utf-8') as file:
          reader = csv.reader(file)
          headers = next(reader)
          rows = list(reader)
@@ -81,7 +81,7 @@ class CSVHandler:
                if i < len(rows):
                   rows[i][col_index] = f"{float(val):.6f}"
       
-      with open(path, mode='w', newline='', encoding='utf-8') as file:
+      with open(path_dest, mode='w', newline='', encoding='utf-8') as file:
          writer = csv.writer(file)
          writer.writerow(headers)
          writer.writerows(rows)

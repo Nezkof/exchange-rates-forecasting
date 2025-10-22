@@ -1,30 +1,30 @@
-from app.utils.data_visualizer import DataVisualizer
+# from app.utils.data_visualizer import DataVisualizer
 
-from app.utils.trainers.custom_lstm_trainer import CustomLSTMTrainer
-from app.utils.data_processor import DataProcessor
-from app.utils.csv_processor import CSVHandler
-from app.models.portfolio.markowitz import MarkowitzMethod
-from app.utils.helpers import load_file
+# from app.utils.trainers.custom_lstm_trainer import CustomLSTMTrainer
+# from app.utils.data_processor import DataProcessor
+# from app.utils.csv_processor import CSVHandler
+# from app.models.portfolio.markowitz import MarkowitzMethod
+# from app.utils.helpers import load_file
 
-class PortfolioOptimizer:
-   def __init__(
-         self,
-         tickers,
-         samples_amount.
-         window_size,
-         data_length,
-         control_length
+# class PortfolioOptimizer:
+#    def __init__(
+#          self,
+#          tickers,
+#          samples_amount.
+#          window_size,
+#          data_length,
+#          control_length
 
-         # history_data_path, daily_returns_path, weights_path,
+#          # history_data_path, daily_returns_path, weights_path,
 
-      ):
-      self.daily_returns_path = daily_returns_path
-      self.tickers = tickers
-      self.samples_amount = samples_amount
+#       ):
+#       self.daily_returns_path = daily_returns_path
+#       self.tickers = tickers
+#       self.samples_amount = samples_amount
 
-      self.data_processor = DataProcessor(self.window_size, self.data_length, self.control_length)
-      self.dataset = {}
-      self.predictions_results = {}
+#       self.data_processor = DataProcessor(self.window_size, self.data_length, self.control_length)
+#       self.dataset = {}
+#       self.predictions_results = {}
 
    # def _read_dataset(self):
    #    for ticker in self.tickers:

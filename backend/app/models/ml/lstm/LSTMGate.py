@@ -1,6 +1,11 @@
 import numpy as np
 
-from app.models.ml.lstm import DenseLayer, ForgetGate, InputGate, LossLayer, OutputGate
+from app.models.ml.lstm.DenseLayer import DenseLayer
+from app.models.ml.lstm.ForgetGate import ForgetGate
+from app.models.ml.lstm.InputGate import InputGate
+from app.models.ml.lstm.LossLayer import LossLayer
+from app.models.ml.lstm.OutputGate import OutputGate
+
 from app.utils.use_functions import tanh
 
 
