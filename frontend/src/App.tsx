@@ -14,6 +14,7 @@ import "./config/chartConfig";
 import queryClient from "./config/queryClientConfig";
 import { routes } from "./types/routes";
 import ForecastingPage from "./pages/forecasting/ForecastingPage";
+import OptimizationPage from "./pages/optimization/OptimizationPage";
 
 const App = () => {
    return (
@@ -25,6 +26,7 @@ const App = () => {
                   <Routes>
                      <Route path={routes[1].to} element={<TrainingPage />} />
                      <Route path={routes[2].to} element={<ForecastingPage />} />
+                     <Route path={routes[3].to} element={<OptimizationPage />} />
                   </Routes>
                </main>
             </BrowserRouter>

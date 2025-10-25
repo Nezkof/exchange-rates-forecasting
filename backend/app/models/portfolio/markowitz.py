@@ -4,9 +4,10 @@ from tqdm import tqdm
 import plotly.graph_objects as go
 
 class MarkowitzMethod:
-   def __init__(self, path, tickers):
+   def __init__(self, path, tickers, risk_threshold):
       self.path = path
       self.tickers = tickers
+      self.risk_threshold = risk_threshold
 
    def prepare_data(self):
       self.daily_returns = pd.read_csv(self.path, index_col=0, usecols=["DATE"] + self.tickers)
@@ -71,10 +72,68 @@ class MarkowitzMethod:
       fig.update_layout(coloraxis_colorbar=dict(title="Sharpe Ratio"))
       fig.show()
 
+   def get_portfolios_below_risk(self):
+      all_risks = self.mean_variance_pairs[:, 1]**0.5      
+      indices_below_threshold = np.where(all_risks < self.risk_threshold)[0]      
+      filtered_weights = [self.weights_list[i] for i in indices_below_threshold]
+      return filtered_weights
+   
+   def get_chart_data(self, capital):
+         all_risks_raw = self.mean_variance_pairs[:, 1]**0.5
+         all_returns_raw = self.mean_variance_pairs[:, 0]
+
+         all_risks = np.nan_to_num(all_risks_raw, nan=0.0, posinf=0.0, neginf=0.0)
+         all_returns = np.nan_to_num(all_returns_raw, nan=0.0, posinf=0.0, neginf=0.0)
+        
+         all_sharpe_ratios = np.nan_to_num(
+            (all_returns - self.risk_free_rate) / all_risks,
+            nan=0.0, 
+            posinf=0.0,
+            neginf=0.0
+         )
+            
+         portfolios_data = []
+            
+         for i in range(len(self.weights_list)):
+            current_risk = float(all_risks[i])
+            if current_risk < self.risk_threshold:
+               try:
+                  tickers = self.tickers_list[i].tolist()
+               except AttributeError:
+                  tickers = self.tickers_list[i]
+                
+               original_weights = np.array(self.weights_list[i])
+               capital_amounts = original_weights * capital
+                
+               weights_as_capital = capital_amounts.tolist()
+
+               portfolios_data.append({
+                  "risk": current_risk,
+                  "return": float(all_returns[i]),
+                  "sharpe_ratio": float(all_sharpe_ratios[i]),
+                  "tickers": tickers,
+                  "distribution": weights_as_capital 
+               })
+            
+         min_risk = float(np.min(all_risks)) if len(all_risks) > 0 else 0.0
+         max_risk = float(np.max(all_risks)) if len(all_risks) > 0 else 1.0
+         min_return = float(np.min(all_returns)) if len(all_returns) > 0 else 0.0
+         max_return = float(np.max(all_returns)) if len(all_returns) > 0 else 1.0
+
+         metadata = {
+            "x_axis_label": "Annualised Risk (Volatility)",
+            "y_axis_label": "Annualised Return",
+            "color_bar_label": "Sharpe Ratio",
+            "chart_title": f"Portfolios below {self.risk_threshold*100:.0f}% Risk", 
+            "x_range": [min_risk, max_risk], 
+            "y_range": [min_return, max_return] 
+         }
+                
+         return {"portfolios": portfolios_data, "metadata": metadata}
+
    def optimize(self, samples_amount, tickers_amount):
       self.prepare_data()
       self.build_portfolios(samples_amount, tickers_amount)
-      self.visualize_results()
 
 
 

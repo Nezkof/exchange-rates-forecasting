@@ -17,6 +17,8 @@ def markowitz_optimization_endpoint(request: OptimizationRequest):
       window_size = request.window_size,
       hidden_size = request.hidden_size,
       samples_amount = request.samples_amount,
+      risk_threshold = request.risk_threshold,
+      capital = request.capital
    )
 
    return response

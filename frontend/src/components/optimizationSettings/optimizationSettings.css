@@ -1,9 +1,9 @@
-.forecast-settings {
+.optimization-settings {
    position: fixed;
    top: 0;
    right: 0;
-   height: 100%;
    z-index: 5;
+   height: 100%;
 
    display: flex;
    flex-direction: column;
@@ -17,11 +17,11 @@
    transition: transform 0.3s ease;
 }
 
-.forecast-settings--open {
+.optimization-settings--open {
    transform: translateX(0);
 }
 
-.forecast-settings__button {
+.optimization-settings__button {
    background: none;
    display: flex;
    justify-content: center;
@@ -37,16 +37,16 @@
    }
 }
 
-.forecast-settings__button--open img {
+.optimization-settings__button--open img {
    transform: rotateZ(180deg);
 }
 
-.forecast-settings__button--abs {
+.optimization-settings__button--abs {
    position: absolute;
    top: 20px;
    right: 10px;
 }
 
-.forecast-settings__button--invisible {
+.optimization-settings__button--invisible {
    display: none;
 }

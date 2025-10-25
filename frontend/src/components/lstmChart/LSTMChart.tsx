@@ -10,7 +10,7 @@ interface LSTMChartProps {
 }
 
 export function LSTMChart({ data }: LSTMChartProps) {
-   const chartRef = useRef<ChartJS | null>(null);
+   const chartRef = useRef<ChartJS<"line"> | null>(null);
 
    const chartData = {
       labels: [...data.train.dates, ...data.control.dates],

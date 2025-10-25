@@ -10,4 +10,6 @@ class OptimizationRequest(BaseModel):
    window_size : int
    hidden_size : int
    samples_amount : int
+   risk_threshold: int
+   capital : int
 
