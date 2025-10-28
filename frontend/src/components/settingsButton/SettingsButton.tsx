@@ -1,10 +1,11 @@
+import ChevronsLeft from "/icons/chevronsLeft.svg";
+import "./settingsButton.css";
+
 interface Props {
    isOpen: boolean;
    handleBtn: () => void;
    variant?: "default" | "hide-when-open";
 }
-
-import ChevronsLeft from "/icons/chevronsLeft.svg";
 
 const SettingsButton = ({ isOpen, handleBtn, variant = "default" }: Props) => {
    if (variant === "hide-when-open" && isOpen) {
@@ -13,8 +14,8 @@ const SettingsButton = ({ isOpen, handleBtn, variant = "default" }: Props) => {
 
    return (
       <button
-         className={`train-settings__button ${
-            isOpen ? "train-settings__button--open" : "train-settings__button--abs"
+         className={`settings__button ${
+            isOpen ? "settings__button--open" : "settings__button--abs"
          }`}
          onClick={handleBtn}
       >

@@ -25,7 +25,6 @@ export type Optimizer = "ADAM" | "SGD";
 export type CSV_TYPE = "Returns" | "Data";
 
 export interface TrainConfig {
-   csv_type: CSV_TYPE;
    column_name: string;
    hidden_size: number;
    window_size: number;
@@ -40,7 +39,6 @@ export interface TrainConfig {
 }
 
 export interface ForecastConfig {
-   csv_type: CSV_TYPE;
    column_name: string;
    data_length: number;
    control_length: number;

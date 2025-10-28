@@ -1,4 +1,4 @@
-.train-settings__form {
+.settings-form {
    display: grid;
    column-gap: 20px;
    row-gap: 20px;
@@ -9,17 +9,17 @@
    padding-inline: 20px;
 }
 
-.train-settings__form::-webkit-scrollbar {
+.settings-form::-webkit-scrollbar {
    width: 4px;
    margin-right: 10px;
 }
 
-.train-settings__form::-webkit-scrollbar-track {
+.settings-form::-webkit-scrollbar-track {
    background: inherit;
    border-radius: 4px;
 }
 
-.train-settings__form::-webkit-scrollbar-thumb {
+.settings-form::-webkit-scrollbar-thumb {
    background-color: var(--color-accent-10);
    border-radius: 4px;
 }
@@ -67,7 +67,8 @@
    margin-top: 20px;
 
    button {
-      background-color: var(--color-dark-10);
+      background: var(--color-accent);
+      color: var(--color-dark);
       border: none;
       border-radius: 10px;
       padding: 10px;
@@ -75,6 +76,6 @@
    }
 
    button:hover {
-      background-color: var(--color-dark-20);
+      filter: brightness(0.85);
    }
 }

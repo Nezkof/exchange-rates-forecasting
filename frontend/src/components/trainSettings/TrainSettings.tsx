@@ -1,18 +1,11 @@
-import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import "./trainSettings.css";
-import "./form.css";
-
-import ConfigLoader from "../configLoader/ConfigLoader";
-import { useLocalConfig } from "../../hooks/useConfig";
-import { useEffect } from "react";
+import SettingsForm from "../settingsForm/SettingsForm";
 import type { TrainConfig } from "../../types/lstm";
-import SettingsButton from "../settingsButton/SettingsButton";
+import "./trainSettings.css";
+import { InputField, SelectField } from "../formField/FormField";
+import { OPTIMIZER_OPTIONS } from "../../types/settings";
 
 const configSchema = z.object({
-   csv_type: z.enum(["Returns", "Data"]),
    column_name: z.string(),
    hidden_size: z.number().int().min(1),
    window_size: z.number().int().min(1),
@@ -22,149 +15,121 @@ const configSchema = z.object({
    epochs: z.number().int().min(1),
    precision: z.number().positive(),
    optimizer: z.enum(["ADAM", "SGD"]),
-
    data_length: z.number().int().min(1),
    control_length: z.number().int().min(1),
 });
 
-type Config = z.infer<typeof configSchema>;
-
 interface Props {
    settingsButton: {
-      isSettingsOpen: boolean;
+      isOpen: boolean;
       handleButton: () => void;
    };
    onSubmit: (data: TrainConfig) => void;
 }
 
 const TrainSettings = ({ settingsButton, onSubmit }: Props) => {
-   const {
-      register,
-      handleSubmit,
-      formState: { errors },
-      reset,
-   } = useForm<Config>({
-      resolver: zodResolver(configSchema),
-   });
-
-   const { config: loadedConfig } = useLocalConfig();
-
-   useEffect(() => {
-      if (loadedConfig) {
-         reset(loadedConfig);
-      }
-   }, [loadedConfig, reset]);
-
    return (
-      <aside
-         className={`train-settings ${settingsButton.isSettingsOpen ? "train-settings--open" : ""}`}
+      <SettingsForm
+         schema={configSchema}
+         onSubmit={onSubmit}
+         settingsButton={settingsButton}
+         className="train-settings"
+         submitLabel="Train"
       >
-         <SettingsButton
-            isOpen={settingsButton.isSettingsOpen}
-            handleBtn={settingsButton.handleButton}
-         />
-
-         <form className="train-settings__form" onSubmit={handleSubmit(onSubmit)}>
-            {/* STRING FIELDS */}
-            <div className="form__item">
-               <label>CSV type</label>
-               <select {...register("csv_type")}>
-                  <option value="Returns">Returns</option>
-                  <option value="Data">Data</option>
-               </select>
-               {errors.csv_type && <span>{errors.csv_type.message}</span>}
-            </div>
-
-            <div className="form__item">
-               <label>Column Name</label>
-               <input {...register("column_name")} />
-               {errors.column_name && <span>{errors.column_name.message}</span>}
-            </div>
-
-            {/* NUMBER FIELDS */}
-            <div className="form__item">
-               <label>Hidden Size</label>
-               <input type="number" {...register("hidden_size", { valueAsNumber: true })} />
-               {errors.hidden_size && <span>{errors.hidden_size.message}</span>}
-            </div>
-
-            <div className="form__item">
-               <label>Window Size</label>
-               <input type="number" {...register("window_size", { valueAsNumber: true })} />
-               {errors.window_size && <span>{errors.window_size.message}</span>}
-            </div>
-
-            <div className="form__item">
-               <label>Batch Size</label>
-               <input type="number" {...register("batch_size", { valueAsNumber: true })} />
-               {errors.batch_size && <span>{errors.batch_size.message}</span>}
-            </div>
-
-            <div className="form__item">
-               <label>Learning Rate</label>
-               <input
+         {(register, errors) => (
+            <>
+               <InputField
+                  label="Column Name"
+                  register={register}
+                  name="column_name"
+                  placeholder="USD"
+                  error={errors.column_name}
+               />
+               <InputField
+                  label="Hidden Size"
+                  register={register}
+                  name="hidden_size"
+                  type="number"
+                  placeholder="256"
+                  error={errors.hidden_size}
+               />
+               <InputField
+                  label="Window Size"
+                  register={register}
+                  name="window_size"
+                  type="number"
+                  placeholder="50"
+                  error={errors.window_size}
+               />
+               <InputField
+                  label="Batch Size"
+                  register={register}
+                  name="batch_size"
+                  type="number"
+                  placeholder="64"
+                  error={errors.batch_size}
+               />
+               <InputField
+                  label="Learning Rate"
+                  register={register}
+                  name="learning_rate"
                   type="number"
                   step="any"
-                  {...register("learning_rate", { valueAsNumber: true })}
+                  placeholder="0.001"
+                  error={errors.learning_rate}
                />
-               {errors.learning_rate && <span>{errors.learning_rate.message}</span>}
-            </div>
-
-            <div className="form__item">
-               <label>Learning Rate Decrease Speed</label>
-               <input
+               <InputField
+                  label="Learning Rate Decrease Speed"
+                  register={register}
+                  name="learning_rate_decrease_speed"
                   type="number"
                   step="any"
-                  {...register("learning_rate_decrease_speed", { valueAsNumber: true })}
+                  placeholder="0.0001"
+                  error={errors.learning_rate_decrease_speed}
                />
-               {errors.learning_rate_decrease_speed && (
-                  <span>{errors.learning_rate_decrease_speed.message}</span>
-               )}
-            </div>
-
-            <div className="form__item">
-               <label>Epochs</label>
-               <input type="number" {...register("epochs", { valueAsNumber: true })} />
-               {errors.epochs && <span>{errors.epochs.message}</span>}
-            </div>
-
-            <div className="form__item">
-               <label>Precision</label>
-               <input
+               <InputField
+                  label="Epochs"
+                  register={register}
+                  name="epochs"
+                  type="number"
+                  placeholder="3000"
+                  error={errors.epochs}
+               />
+               <InputField
+                  label="Precision"
+                  register={register}
+                  name="precision"
                   type="number"
                   step="any"
-                  {...register("precision", { valueAsNumber: true })}
+                  placeholder="0.0001"
+                  error={errors.precision}
                />
-               {errors.precision && <span>{errors.precision.message}</span>}
-            </div>
-
-            <div className="form__item">
-               <label>Optimizer</label>
-               <select {...register("optimizer")}>
-                  <option value="ADAM">ADAM</option>
-                  <option value="SGD">SGD</option>
-               </select>
-               {errors.optimizer && <span>{errors.optimizer.message}</span>}
-            </div>
-
-            <div className="form__item">
-               <label>Data Length</label>
-               <input type="number" {...register("data_length", { valueAsNumber: true })} />
-               {errors.data_length && <span>{errors.data_length.message}</span>}
-            </div>
-
-            <div className="form__item">
-               <label>Control Length</label>
-               <input type="number" {...register("control_length", { valueAsNumber: true })} />
-               {errors.control_length && <span>{errors.control_length.message}</span>}
-            </div>
-
-            <div className="form__buttons">
-               <button type="submit">Train</button>
-               <ConfigLoader onConfigLoad={(cfg) => reset(cfg)} />
-            </div>
-         </form>
-      </aside>
+               <SelectField
+                  label="Optimizer"
+                  register={register}
+                  name="optimizer"
+                  options={OPTIMIZER_OPTIONS}
+                  error={errors.optimizer}
+               />
+               <InputField
+                  label="Data Length"
+                  register={register}
+                  name="data_length"
+                  type="number"
+                  placeholder="5000"
+                  error={errors.data_length}
+               />
+               <InputField
+                  label="Control Length"
+                  register={register}
+                  name="control_length"
+                  type="number"
+                  placeholder="365"
+                  error={errors.control_length}
+               />
+            </>
+         )}
+      </SettingsForm>
    );
 };
 

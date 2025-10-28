@@ -1,17 +1,11 @@
-import "./forecastSettings.css";
-import "./form.css";
-
-import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import ConfigLoader from "../configLoader/ConfigLoader";
-import { useLocalConfig } from "../../hooks/useConfig";
-import { useEffect } from "react";
+import SettingsForm from "../settingsForm/SettingsForm";
 import type { ForecastConfig } from "../../types/lstm";
-import SettingsButton from "../settingsButton/SettingsButton";
+import "./forecastSettings.css";
+import { SelectField, InputField } from "../formField/FormField";
+import { OPTIMIZER_OPTIONS } from "../../types/settings";
 
 const configSchema = z.object({
-   csv_type: z.enum(["Returns", "Data"]),
    column_name: z.string(),
    data_length: z.number().int().min(1),
    control_length: z.number().int().min(1),
@@ -30,86 +24,72 @@ interface Props {
    onSubmit: (data: ForecastConfig) => void;
 }
 
-const TrainSettings = ({ settingsButton, onSubmit }: Props) => {
-   const {
-      register,
-      handleSubmit,
-      formState: { errors },
-      reset,
-   } = useForm<Config>({
-      resolver: zodResolver(configSchema),
-   });
-
-   const { config: loadedConfig } = useLocalConfig();
-
-   useEffect(() => {
-      if (loadedConfig) {
-         reset(loadedConfig);
-      }
-   }, [loadedConfig, reset]);
-
+const ForecastSettings = ({ settingsButton, onSubmit }: Props) => {
    return (
-      <aside className={`train-settings ${settingsButton.isOpen ? "train-settings--open" : ""}`}>
-         <SettingsButton isOpen={settingsButton.isOpen} handleBtn={settingsButton.handleButton} />
+      <SettingsForm
+         schema={configSchema}
+         onSubmit={onSubmit}
+         settingsButton={settingsButton}
+         className="train-settings"
+         submitLabel="Forecast"
+      >
+         {(register, errors) => (
+            <>
+               <InputField
+                  label="Column Name"
+                  register={register}
+                  name="column_name"
+                  placeholder="USD"
+                  error={errors.column_name}
+               />
 
-         <form className="train-settings__form" onSubmit={handleSubmit(onSubmit)}>
-            {/* STRING FIELDS */}
-            <div className="form__item">
-               <label>CSV type</label>
-               <select {...register("csv_type")}>
-                  <option value="Returns">Returns</option>
-                  <option value="Data">Data</option>
-               </select>
-               {errors.csv_type && <span>{errors.csv_type.message}</span>}
-            </div>
+               <InputField
+                  label="Hidden Size"
+                  register={register}
+                  name="hidden_size"
+                  type="number"
+                  placeholder="256"
+                  error={errors.hidden_size}
+               />
 
-            <div className="form__item">
-               <label>Column Name</label>
-               <input {...register("column_name")} />
-               {errors.column_name && <span>{errors.column_name.message}</span>}
-            </div>
+               <InputField
+                  label="Window Size"
+                  register={register}
+                  name="window_size"
+                  type="number"
+                  placeholder="50"
+                  error={errors.window_size}
+               />
 
-            {/* NUMBER FIELDS */}
-            <div className="form__item">
-               <label>Hidden Size</label>
-               <input type="number" {...register("hidden_size", { valueAsNumber: true })} />
-               {errors.hidden_size && <span>{errors.hidden_size.message}</span>}
-            </div>
+               <SelectField
+                  label="Optimizer"
+                  register={register}
+                  name="optimizer"
+                  options={OPTIMIZER_OPTIONS}
+                  error={errors.optimizer}
+               />
 
-            <div className="form__item">
-               <label>Window Size</label>
-               <input type="number" {...register("window_size", { valueAsNumber: true })} />
-               {errors.window_size && <span>{errors.window_size.message}</span>}
-            </div>
+               <InputField
+                  label="Data Length"
+                  register={register}
+                  name="data_length"
+                  type="number"
+                  placeholder="5000"
+                  error={errors.data_length}
+               />
 
-            <div className="form__item">
-               <label>Optimizer</label>
-               <select {...register("optimizer")}>
-                  <option value="ADAM">ADAM</option>
-                  <option value="SGD">SGD</option>
-               </select>
-               {errors.optimizer && <span>{errors.optimizer.message}</span>}
-            </div>
-
-            <div className="form__item">
-               <label>Data Length</label>
-               <input type="number" {...register("data_length", { valueAsNumber: true })} />
-               {errors.data_length && <span>{errors.data_length.message}</span>}
-            </div>
-
-            <div className="form__item">
-               <label>Control Length</label>
-               <input type="number" {...register("control_length", { valueAsNumber: true })} />
-               {errors.control_length && <span>{errors.control_length.message}</span>}
-            </div>
-
-            <div className="form__buttons">
-               <button type="submit">Forecast</button>
-               <ConfigLoader onConfigLoad={(cfg) => reset(cfg)} />
-            </div>
-         </form>
-      </aside>
+               <InputField
+                  label="Control Length"
+                  register={register}
+                  name="control_length"
+                  type="number"
+                  placeholder="365"
+                  error={errors.control_length}
+               />
+            </>
+         )}
+      </SettingsForm>
    );
 };
 
-export default TrainSettings;
+export default ForecastSettings;

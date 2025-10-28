@@ -4,15 +4,17 @@ from tqdm import tqdm
 import plotly.graph_objects as go
 
 class MarkowitzMethod:
-   def __init__(self, path, tickers, risk_threshold):
+   def __init__(self, path, tickers, risk_threshold, rows_num):
       self.path = path
       self.tickers = tickers
       self.risk_threshold = risk_threshold
+      self.rows_num = rows_num
 
    def prepare_data(self):
-      self.daily_returns = pd.read_csv(self.path, index_col=0, usecols=["DATE"] + self.tickers)
+      self.daily_returns = pd.read_csv(self.path, index_col=0, usecols=["DATE"] + self.tickers, nrows=self.rows_num)
       self.mean_annual_returns = (1 + self.daily_returns.mean())**252 - 1
       self.cov = self.daily_returns.cov()*252
+      print(self.daily_returns.shape)
 
    def build_portfolios(self, samples_amount, tickers_amount):
       self.mean_variance_pairs = []

@@ -15,7 +15,6 @@ class ControlResults(BaseModel):
    pure: List[float]
 
 class LSTMTrainRequest(BaseModel):
-   csv_type: str
    column_name: str
    data_length: int
    control_length: int
@@ -28,7 +27,6 @@ class LSTMTrainRequest(BaseModel):
    precision: float
 
 class LSTMForecastRequest(BaseModel):
-   csv_type: str
    column_name: str
    data_length: int
    control_length : int

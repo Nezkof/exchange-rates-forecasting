@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./optimizationPage.css";
 
 import ErrorMessage from "../../components/errorMessage/ErrorMessage";
@@ -25,10 +25,6 @@ const OptimizationPage = () => {
    const onSubmit = (data: OptimizationConfig) => {
       mutation.mutate(data);
    };
-
-   useEffect(() => {
-      console.log(mutation.data);
-   }, [mutation.isSuccess, mutation.data]);
 
    return (
       <>

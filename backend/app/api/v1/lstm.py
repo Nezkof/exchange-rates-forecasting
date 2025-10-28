@@ -7,7 +7,6 @@ router = APIRouter()
 @router.post("/train")
 def train_lstm_endpoint(request: LSTMTrainRequest):
    response = LSTMService.train_custom(      
-      csv_type=request.csv_type,
       column_name=request.column_name,
       data_length=request.data_length,
       control_length=request.control_length,
@@ -24,7 +23,6 @@ def train_lstm_endpoint(request: LSTMTrainRequest):
 @router.post("/forecast")
 def forecast_lstm_endpoint(request: LSTMForecastRequest):
    response = LSTMService.forecast_custom(
-      csv_type=request.csv_type,
       column_name=request.column_name,
       data_length=request.data_length,
       control_length=request.control_length,

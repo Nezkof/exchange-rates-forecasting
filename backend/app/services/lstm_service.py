@@ -30,7 +30,6 @@ class LSTMService:
 
    @staticmethod
    def train_custom(
-      csv_type: str,
       column_name: str,
       data_length: int,
       control_length: int,
@@ -41,6 +40,7 @@ class LSTMService:
       learning_rate_decrease_speed: float,
       epochs: int,
       precision: float,
+      csv_type = 'Data',
    ) -> LSTMTrainingResponse:
       csv_path = DATASETS_DIR / f"UAH_History_{csv_type}.csv"
       weights_path = WEIGHTS_DIR / f"{optimizer}-{column_name}.npz"
@@ -83,7 +83,6 @@ class LSTMService:
 
    @staticmethod
    def forecast_custom(
-      csv_type: str,
       column_name: str,
       data_length: int,
       control_length: int,
@@ -92,6 +91,7 @@ class LSTMService:
       hidden_size: int,
       learning_rate = 0.1,
       learning_rate_decrease_speed = 0.1,
+      csv_type = 'Data',
    ) -> LSTMForecastResponse:
       csv_path = DATASETS_DIR / f"UAH_History_{csv_type}.csv"
       weights_path = WEIGHTS_DIR / f"{optimizer}-{column_name}.npz"

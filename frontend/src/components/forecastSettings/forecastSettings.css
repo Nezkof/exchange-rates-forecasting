@@ -20,33 +20,3 @@
 .forecast-settings--open {
    transform: translateX(0);
 }
-
-.forecast-settings__button {
-   background: none;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   padding: 5px;
-   border: none;
-   border-radius: 10px;
-   max-width: max-content;
-   align-self: flex-end;
-
-   img {
-      width: 40px;
-   }
-}
-
-.forecast-settings__button--open img {
-   transform: rotateZ(180deg);
-}
-
-.forecast-settings__button--abs {
-   position: absolute;
-   top: 20px;
-   right: 10px;
-}
-
-.forecast-settings__button--invisible {
-   display: none;
-}

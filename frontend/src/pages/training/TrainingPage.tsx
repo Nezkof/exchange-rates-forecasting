@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import TrainSettings from "../../components/trainSettings/TrainSettings";
 import "./trainingPage.css";
 
@@ -30,7 +30,7 @@ const TrainingPage = () => {
          <section className="page training-page">
             <TrainSettings
                settingsButton={{
-                  isSettingsOpen,
+                  isOpen: isSettingsOpen,
                   handleButton: handleSettingsButton,
                }}
                onSubmit={onSubmit}
