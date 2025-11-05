@@ -1,6 +1,6 @@
 export const routes = [
-   { to: "/", label: "Home" },
-   { to: "/training", label: "Training" },
-   { to: "/forecasting", label: "Forecasting" },
-   { to: "/optimization", label: "Optimization" },
+   { to: "/", label: "Головна" },
+   { to: "/training", label: "Тренування" },
+   { to: "/forecasting", label: "Прогнозування" },
+   { to: "/optimization", label: "Оптимізація" },
 ];

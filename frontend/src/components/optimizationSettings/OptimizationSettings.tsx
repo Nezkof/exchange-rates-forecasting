@@ -48,7 +48,7 @@ const OptimizationSettings = ({ settingsButton, onSubmit }: Props) => {
          {(register, errors) => (
             <>
                <InputField
-                  label="Tickers"
+                  label="Активи"
                   register={register}
                   name="tickers"
                   placeholder="CNY,EUR,USD"
@@ -56,7 +56,7 @@ const OptimizationSettings = ({ settingsButton, onSubmit }: Props) => {
                />
 
                <InputField
-                  label="Hidden Size"
+                  label="Розмір прихованого шару"
                   register={register}
                   name="hidden_size"
                   type="number"
@@ -65,7 +65,7 @@ const OptimizationSettings = ({ settingsButton, onSubmit }: Props) => {
                />
 
                <InputField
-                  label="Window Size"
+                  label="Розмір вікна"
                   register={register}
                   name="window_size"
                   type="number"
@@ -74,7 +74,7 @@ const OptimizationSettings = ({ settingsButton, onSubmit }: Props) => {
                />
 
                <InputField
-                  label="Data Length"
+                  label="Довжина даних"
                   register={register}
                   name="data_length"
                   type="number"
@@ -83,7 +83,7 @@ const OptimizationSettings = ({ settingsButton, onSubmit }: Props) => {
                />
 
                <InputField
-                  label="Control Length"
+                  label="Довжина контрольної вибірки"
                   register={register}
                   name="control_length"
                   type="number"
@@ -92,7 +92,7 @@ const OptimizationSettings = ({ settingsButton, onSubmit }: Props) => {
                />
 
                <InputField
-                  label="Samples Amount"
+                  label="Кількість семплів"
                   register={register}
                   name="samples_amount"
                   type="number"
@@ -101,7 +101,7 @@ const OptimizationSettings = ({ settingsButton, onSubmit }: Props) => {
                />
 
                <InputField
-                  label="Risk Threshold (%)"
+                  label="Допустимий ризик (%)"
                   register={register}
                   name="risk_threshold"
                   type="number"
@@ -110,7 +110,7 @@ const OptimizationSettings = ({ settingsButton, onSubmit }: Props) => {
                />
 
                <InputField
-                  label="Capital"
+                  label="Об'єм капіталу"
                   register={register}
                   name="capital"
                   type="number"

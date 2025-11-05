@@ -1,10 +1,10 @@
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import TrainSettings from "../../components/trainSettings/TrainSettings";
 import "./trainingPage.css";
 
-import FetchService from "../../services/fetchService/FetchService";
 import type { TrainConfig } from "../../types/lstm";
-import { useMutation } from "@tanstack/react-query";
+import FetchService from "../../services/fetchService/FetchService";
+import TrainSettings from "../../components/trainSettings/TrainSettings";
 import { LSTMChart } from "../../components/lstmChart/LSTMChart";
 import SettingsButton from "../../components/settingsButton/SettingsButton";
 import LoadingSpinner from "../../components/loadingSpinner/LoadingSpinner";
@@ -36,7 +36,7 @@ const TrainingPage = () => {
                onSubmit={onSubmit}
             />
 
-            {mutation.isPending && <LoadingSpinner message="Training model..." />}
+            {mutation.isPending && <LoadingSpinner message="Тренування..." />}
             {mutation.isError && <ErrorMessage message={mutation.error.message} />}
             {mutation.isSuccess && <LSTMChart data={mutation.data} />}
 

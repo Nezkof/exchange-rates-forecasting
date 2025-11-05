@@ -31,12 +31,12 @@ const ForecastSettings = ({ settingsButton, onSubmit }: Props) => {
          onSubmit={onSubmit}
          settingsButton={settingsButton}
          className="train-settings"
-         submitLabel="Forecast"
+         submitLabel="Виконати прогнозування"
       >
          {(register, errors) => (
             <>
                <InputField
-                  label="Column Name"
+                  label="Назва колонки"
                   register={register}
                   name="column_name"
                   placeholder="USD"
@@ -44,7 +44,7 @@ const ForecastSettings = ({ settingsButton, onSubmit }: Props) => {
                />
 
                <InputField
-                  label="Hidden Size"
+                  label="Розмір прихованого шару"
                   register={register}
                   name="hidden_size"
                   type="number"
@@ -53,7 +53,7 @@ const ForecastSettings = ({ settingsButton, onSubmit }: Props) => {
                />
 
                <InputField
-                  label="Window Size"
+                  label="Розмір вікна"
                   register={register}
                   name="window_size"
                   type="number"
@@ -62,7 +62,7 @@ const ForecastSettings = ({ settingsButton, onSubmit }: Props) => {
                />
 
                <SelectField
-                  label="Optimizer"
+                  label="Оптимізатор"
                   register={register}
                   name="optimizer"
                   options={OPTIMIZER_OPTIONS}
@@ -70,7 +70,7 @@ const ForecastSettings = ({ settingsButton, onSubmit }: Props) => {
                />
 
                <InputField
-                  label="Data Length"
+                  label="Довжина даних"
                   register={register}
                   name="data_length"
                   type="number"
@@ -79,7 +79,7 @@ const ForecastSettings = ({ settingsButton, onSubmit }: Props) => {
                />
 
                <InputField
-                  label="Control Length"
+                  label="Довжина контрольної вибірки"
                   register={register}
                   name="control_length"
                   type="number"

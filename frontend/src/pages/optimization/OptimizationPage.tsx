@@ -37,7 +37,7 @@ const OptimizationPage = () => {
                onSubmit={onSubmit}
             />
 
-            {mutation.isPending && <LoadingSpinner message="Portfolio optimization..." />}
+            {mutation.isPending && <LoadingSpinner message="Оптимізація портфеля..." />}
             {mutation.isError && <ErrorMessage message={mutation.error.message} />}
             {mutation.isSuccess && <PortfoliosInfo data={mutation.data.portfolios} />}
             {mutation.isSuccess && <PortfoliosChart data={mutation.data} />}

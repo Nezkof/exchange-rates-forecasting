@@ -38,7 +38,7 @@ const ConfigLoader = ({ onConfigLoad }: Props) => {
             onChange={onFileChange}
          />
          <button type="button" onClick={onLoadClick}>
-            Load config
+            Завантажити конфіг
          </button>
       </>
    );

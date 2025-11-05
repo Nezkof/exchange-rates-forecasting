@@ -25,7 +25,7 @@ const PortfoliosChart = ({ data }: PortfoliosChartProps) => {
    const chartData: ChartData<"scatter"> = {
       datasets: [
          {
-            label: "Portfolios",
+            label: "Портфелі",
             data: scatterData,
             backgroundColor: "rgba(0, 0, 255, 0.5)",
             borderColor: "rgba(0, 0, 255, 1)",
@@ -67,12 +67,12 @@ const PortfoliosChart = ({ data }: PortfoliosChartProps) => {
                   if (!point) return "";
 
                   return [
-                     `Risk: ${point.x.toFixed(3)}`,
-                     `Return: ${point.y.toFixed(3)}`,
-                     `Sharpe: ${point.sharpe.toFixed(3)}`,
+                     `Ризик: ${point.x.toFixed(3)}`,
+                     `Прибуток: ${point.y.toFixed(3)}`,
+                     `Коефіцієнт Шарпа: ${point.sharpe.toFixed(3)}`,
                      `---`,
-                     `Tickers: ${point.tickers}`,
-                     `Weights: ${point.weights}`,
+                     `Активи: ${point.tickers}`,
+                     `Ваги: ${point.weights}`,
                   ];
                },
             },

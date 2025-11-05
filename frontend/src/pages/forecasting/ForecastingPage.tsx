@@ -36,7 +36,7 @@ const ForecastingPage = () => {
                onSubmit={onSubmit}
             />
 
-            {mutation.isPending && <LoadingSpinner message="Making a forecast..." />}
+            {mutation.isPending && <LoadingSpinner message="Прогнозування..." />}
             {mutation.isError && <ErrorMessage message={mutation.error.message} />}
             {mutation.isSuccess && <LSTMChart data={mutation.data} />}
             {mutation.isSuccess && <MetricsTable data={mutation.data.metrics} />}

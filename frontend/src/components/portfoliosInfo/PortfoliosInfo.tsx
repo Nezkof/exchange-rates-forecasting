@@ -30,14 +30,14 @@ const PortfoliosInfo = ({ data }: Props) => {
 
    return (
       <aside className="portfolios-info">
-         <h2>Top 5 Portfolios (by Sharpe Ratio)</h2>
+         <h2>Топ 5 портфелів за коефіцієнтом Шарпа</h2>
          <table className="portfolios-info__table">
             <thead>
                <tr className="portfolios-info__header-row">
-                  <th>Risk</th>
-                  <th>Return</th>
-                  <th>Sharpe</th>
-                  <th>Distribution</th>
+                  <th>Ризик</th>
+                  <th>Прибуток</th>
+                  <th>Коефіцієнт Шарпа</th>
+                  <th>Розподіл</th>
                </tr>
             </thead>
             <tbody>
@@ -50,11 +50,11 @@ const PortfoliosInfo = ({ data }: Props) => {
 
                   return (
                      <tr key={index} className="portfolios-info__body-row">
-                        <td data-label="Risk">{portfolio.risk.toFixed(3)}</td>
-                        <td data-label="Return">{portfolio.return.toFixed(3)}</td>
-                        <td data-label="Sharpe">{portfolio.sharpe_ratio.toFixed(3)}</td>
+                        <td data-label="Ризик">{portfolio.risk.toFixed(3)}</td>
+                        <td data-label="Прибуток">{portfolio.return.toFixed(3)}</td>
+                        <td data-label="Коефіцієнт Шарпа">{portfolio.sharpe_ratio.toFixed(3)}</td>
                         <td
-                           data-label="Distribution (UAH)"
+                           data-label="Розподіл (UAH)"
                            className="portfolios-info__cell-distribution"
                         >
                            {distribution}

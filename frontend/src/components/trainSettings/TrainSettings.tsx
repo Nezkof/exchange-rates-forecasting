@@ -39,14 +39,14 @@ const TrainSettings = ({ settingsButton, onSubmit }: Props) => {
          {(register, errors) => (
             <>
                <InputField
-                  label="Column Name"
+                  label="Назва колонки"
                   register={register}
                   name="column_name"
                   placeholder="USD"
                   error={errors.column_name}
                />
                <InputField
-                  label="Hidden Size"
+                  label="Розмір прихованого шару"
                   register={register}
                   name="hidden_size"
                   type="number"
@@ -54,7 +54,7 @@ const TrainSettings = ({ settingsButton, onSubmit }: Props) => {
                   error={errors.hidden_size}
                />
                <InputField
-                  label="Window Size"
+                  label="Розмір вікнА"
                   register={register}
                   name="window_size"
                   type="number"
@@ -62,7 +62,7 @@ const TrainSettings = ({ settingsButton, onSubmit }: Props) => {
                   error={errors.window_size}
                />
                <InputField
-                  label="Batch Size"
+                  label="Розмір батча"
                   register={register}
                   name="batch_size"
                   type="number"
@@ -70,7 +70,7 @@ const TrainSettings = ({ settingsButton, onSubmit }: Props) => {
                   error={errors.batch_size}
                />
                <InputField
-                  label="Learning Rate"
+                  label="Коеф. швидкості навчання"
                   register={register}
                   name="learning_rate"
                   type="number"
@@ -79,7 +79,7 @@ const TrainSettings = ({ settingsButton, onSubmit }: Props) => {
                   error={errors.learning_rate}
                />
                <InputField
-                  label="Learning Rate Decrease Speed"
+                  label="Коеф. зменшення швидкості навчання"
                   register={register}
                   name="learning_rate_decrease_speed"
                   type="number"
@@ -88,7 +88,7 @@ const TrainSettings = ({ settingsButton, onSubmit }: Props) => {
                   error={errors.learning_rate_decrease_speed}
                />
                <InputField
-                  label="Epochs"
+                  label="Кількість епох"
                   register={register}
                   name="epochs"
                   type="number"
@@ -96,7 +96,7 @@ const TrainSettings = ({ settingsButton, onSubmit }: Props) => {
                   error={errors.epochs}
                />
                <InputField
-                  label="Precision"
+                  label="Точність"
                   register={register}
                   name="precision"
                   type="number"
@@ -105,14 +105,14 @@ const TrainSettings = ({ settingsButton, onSubmit }: Props) => {
                   error={errors.precision}
                />
                <SelectField
-                  label="Optimizer"
+                  label="Оптимізатор"
                   register={register}
                   name="optimizer"
                   options={OPTIMIZER_OPTIONS}
                   error={errors.optimizer}
                />
                <InputField
-                  label="Data Length"
+                  label="Довжина даних"
                   register={register}
                   name="data_length"
                   type="number"
@@ -120,7 +120,7 @@ const TrainSettings = ({ settingsButton, onSubmit }: Props) => {
                   error={errors.data_length}
                />
                <InputField
-                  label="Control Length"
+                  label="Довжина контрольної вибірки"
                   register={register}
                   name="control_length"
                   type="number"
