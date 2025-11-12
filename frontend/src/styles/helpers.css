@@ -1,4 +1,9 @@
 .page {
+   display: flex;
+   flex-direction: column;
+   gap: 20px;
    padding: 30px;
    flex-grow: 1;
+   justify-content: center;
+   align-items: center;
 }

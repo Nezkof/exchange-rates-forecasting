@@ -9,6 +9,7 @@ import ErrorMessage from "../../components/errorMessage/ErrorMessage";
 import { LSTMChart } from "../../components/lstmChart/LSTMChart";
 import ForecastSettings from "../../components/forecastSettings/ForecastSettings";
 import MetricsTable from "../../components/metricsTable/MetricsTable";
+import InfoWidget from "../../components/infoWidget/infoWidget";
 
 const ForecastingPage = () => {
    const [isConfigOpen, setIsConfigOpen] = useState<boolean>(true);
@@ -36,10 +37,23 @@ const ForecastingPage = () => {
                onSubmit={onSubmit}
             />
 
-            {mutation.isPending && <LoadingSpinner message="Прогнозування..." />}
-            {mutation.isError && <ErrorMessage message={mutation.error.message} />}
+            {!mutation.data && !mutation.isPending && (
+               <InfoWidget
+                  text="Дані прогнозування відсутні. Проведіть прогнозування даних"
+                  type="data-absence"
+               ></InfoWidget>
+            )}
+
+            {mutation.isPending && (
+               <LoadingSpinner message="Прогнозування..." />
+            )}
+            {mutation.isError && (
+               <ErrorMessage message={mutation.error.message} />
+            )}
             {mutation.isSuccess && <LSTMChart data={mutation.data} />}
-            {mutation.isSuccess && <MetricsTable data={mutation.data.metrics} />}
+            {mutation.isSuccess && (
+               <MetricsTable data={mutation.data.metrics} />
+            )}
 
             <SettingsButton
                isOpen={isConfigOpen}

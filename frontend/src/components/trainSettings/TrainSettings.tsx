@@ -34,7 +34,7 @@ const TrainSettings = ({ settingsButton, onSubmit }: Props) => {
          onSubmit={onSubmit}
          settingsButton={settingsButton}
          className="train-settings"
-         submitLabel="Train"
+         submitLabel="Тренувати"
       >
          {(register, errors) => (
             <>

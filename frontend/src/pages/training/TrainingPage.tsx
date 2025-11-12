@@ -9,6 +9,7 @@ import { LSTMChart } from "../../components/lstmChart/LSTMChart";
 import SettingsButton from "../../components/settingsButton/SettingsButton";
 import LoadingSpinner from "../../components/loadingSpinner/LoadingSpinner";
 import ErrorMessage from "../../components/errorMessage/ErrorMessage";
+import InfoWidget from "../../components/infoWidget/infoWidget";
 
 const TrainingPage = () => {
    const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(true);
@@ -36,8 +37,17 @@ const TrainingPage = () => {
                onSubmit={onSubmit}
             />
 
+            {!mutation.data && !mutation.isPending && (
+               <InfoWidget
+                  text="Дані тренування відсутні. Проведіть тренування нейромережі"
+                  type="data-absence"
+               ></InfoWidget>
+            )}
+
             {mutation.isPending && <LoadingSpinner message="Тренування..." />}
-            {mutation.isError && <ErrorMessage message={mutation.error.message} />}
+            {mutation.isError && (
+               <ErrorMessage message={mutation.error.message} />
+            )}
             {mutation.isSuccess && <LSTMChart data={mutation.data} />}
 
             <SettingsButton

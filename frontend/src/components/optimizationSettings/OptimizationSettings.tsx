@@ -13,7 +13,10 @@ const configSchema = z.object({
    window_size: z.number().int().min(1),
    hidden_size: z.number().int().min(1),
    samples_amount: z.number().int().min(1),
-   risk_threshold: z.number().min(0, "Must be positive").max(100, "Cannot exceed 100"),
+   risk_threshold: z
+      .number()
+      .min(0, "Must be positive")
+      .max(100, "Cannot exceed 100"),
    capital: z.number().int().min(1),
 });
 
@@ -41,7 +44,7 @@ const OptimizationSettings = ({ settingsButton, onSubmit }: Props) => {
          onSubmit={onSubmit}
          settingsButton={settingsButton}
          className="optimization-settings"
-         submitLabel="Optimize"
+         submitLabel="Оптимізувати"
          transformConfigForForm={transformForForm}
          transformConfigForReset={transformForForm}
       >

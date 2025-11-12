@@ -10,6 +10,7 @@ import type { OptimizationConfig } from "../../types/portfolio";
 import OptimizationSettings from "../../components/optimizationSettings/OptimizationSettings";
 import PortfoliosChart from "../../components/portfoliosChart/PortfoliosChart";
 import PortfoliosInfo from "../../components/portfoliosInfo/PortfoliosInfo";
+import InfoWidget from "../../components/infoWidget/infoWidget";
 
 const OptimizationPage = () => {
    const [isConfigOpen, setIsConfigOpen] = useState<boolean>(true);
@@ -37,9 +38,22 @@ const OptimizationPage = () => {
                onSubmit={onSubmit}
             />
 
-            {mutation.isPending && <LoadingSpinner message="Оптимізація портфеля..." />}
-            {mutation.isError && <ErrorMessage message={mutation.error.message} />}
-            {mutation.isSuccess && <PortfoliosInfo data={mutation.data.portfolios} />}
+            {!mutation.data && !mutation.isPending && (
+               <InfoWidget
+                  text="Дані оптимізації відсутні. Проведіть оптимізацію інвестиційного портфелю"
+                  type="data-absence"
+               ></InfoWidget>
+            )}
+
+            {mutation.isPending && (
+               <LoadingSpinner message="Оптимізація портфеля..." />
+            )}
+            {mutation.isError && (
+               <ErrorMessage message={mutation.error.message} />
+            )}
+            {mutation.isSuccess && (
+               <PortfoliosInfo data={mutation.data.portfolios} />
+            )}
             {mutation.isSuccess && <PortfoliosChart data={mutation.data} />}
 
             <SettingsButton

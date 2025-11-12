@@ -15,6 +15,7 @@ import queryClient from "./config/queryClientConfig";
 import { routes } from "./types/routes";
 import ForecastingPage from "./pages/forecasting/ForecastingPage";
 import OptimizationPage from "./pages/optimization/OptimizationPage";
+import HomePage from "./pages/home/HomePage";
 
 const App = () => {
    return (
@@ -24,9 +25,13 @@ const App = () => {
                <main>
                   <NavigationMenu />
                   <Routes>
+                     <Route path={routes[0].to} element={<HomePage />} />
                      <Route path={routes[1].to} element={<TrainingPage />} />
                      <Route path={routes[2].to} element={<ForecastingPage />} />
-                     <Route path={routes[3].to} element={<OptimizationPage />} />
+                     <Route
+                        path={routes[3].to}
+                        element={<OptimizationPage />}
+                     />
                   </Routes>
                </main>
             </BrowserRouter>

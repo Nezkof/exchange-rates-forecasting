@@ -43,8 +43,6 @@ class PortfolioService:
       risk_threshold = risk_threshold / 100
       rows_num = control_length * 5 + control_length
 
-      print("Test 1")
-
       for ticker in tickers:
          forecast = LSTMService.forecast_custom(ticker,data_length,control_length, optimizer,window_size, hidden_size)
          predictions_results[ticker] = {
