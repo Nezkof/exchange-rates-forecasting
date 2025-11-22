@@ -1,7 +1,10 @@
 import { Line } from "react-chartjs-2";
 import type { LSTMTrainingResponse } from "../../types/lstm";
 import { useRef } from "react";
-import type { Chart as ChartJS } from "chart.js";
+import {
+   Chart as ChartJS,
+   type ChartOptions,
+} from "chart.js";
 
 import "./lstmChart.css";
 
@@ -63,7 +66,7 @@ export function LSTMChart({ data }: LSTMChartProps) {
       ],
    };
 
-   const options = {
+   const options: ChartOptions<"line"> = {
       responsive: true,
       maintainAspectRatio: false,
       interaction: {
@@ -104,8 +107,8 @@ export function LSTMChart({ data }: LSTMChartProps) {
                mode: "x" as const,
             },
             limits: {
-               x: { min: "original", max: "original" },
-               y: { min: "original", max: "original" },
+               x: { min: "original" as const, max: "original" as const },
+               y: { min: "original" as const, max: "original" as const },
             },
          },
       },

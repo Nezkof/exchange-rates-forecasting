@@ -32,11 +32,15 @@ interface Props {
 }
 
 const OptimizationSettings = ({ settingsButton, onSubmit }: Props) => {
-   const transformForForm = (config: any): ConfigInput => ({
-      ...config,
-      tickers: config.tickers.join(","),
-      risk_threshold: config.risk_threshold * 100,
-   });
+   const transformForForm = (config: any): ConfigInput => {
+      if (!config) return {} as ConfigInput;
+
+      return {
+         ...config,
+         tickers: Array.isArray(config.tickers) ? config.tickers.join(",") : "",
+         risk_threshold: (config.risk_threshold ?? 0) * 100,
+      };
+   };
 
    return (
       <SettingsForm

@@ -27,7 +27,7 @@ const OptimizationPage = () => {
       mutationFn: (config: OptimizationConfig) => FetchService.optimize(config),
    });
 
-   const onSubmit = (data: OptimizationConfig) => {
+   const onSubmit = (data: any) => {
       mutation.mutate(data);
       if (window.innerWidth < 768) {
          closeConfig();

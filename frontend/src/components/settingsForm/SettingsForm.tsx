@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import type { FieldValues } from "react-hook-form";
+import type { FieldValues, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import type { ReactNode } from "react";
@@ -38,7 +38,7 @@ function SettingsForm<T extends FieldValues>({
       formState: { errors },
       reset,
    } = useForm<T>({
-      resolver: zodResolver(schema),
+      resolver: zodResolver(schema as any) as any,
    });
 
    const { config: loadedConfig } = useLocalConfig();
@@ -48,18 +48,24 @@ function SettingsForm<T extends FieldValues>({
          const formValues = transformConfigForForm
             ? transformConfigForForm(loadedConfig)
             : loadedConfig;
-         reset(formValues);
+         reset(formValues as T);
       }
    }, [loadedConfig, reset, transformConfigForForm]);
 
    const handleConfigLoad = (cfg: any) => {
+      if (!cfg) return;
+
       const formValues = transformConfigForReset ? transformConfigForReset(cfg) : cfg;
-      reset(formValues);
+      reset(formValues as T);
+   };
+
+   const onFormSubmit: SubmitHandler<T> = (data) => {
+      onSubmit(data);
    };
 
    return (
       <aside className={`${className} ${settingsButton.isOpen ? `${className}--open` : ""}`}>
-         <form className={`settings-form`} onSubmit={handleSubmit(onSubmit)}>
+         <form className={`settings-form`} onSubmit={handleSubmit(onFormSubmit as any)}>
             {children(register, errors)}
 
             <div className="form__buttons">

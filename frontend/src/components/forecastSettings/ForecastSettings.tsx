@@ -14,8 +14,6 @@ const configSchema = z.object({
    hidden_size: z.number().int().min(1),
 });
 
-type Config = z.infer<typeof configSchema>;
-
 interface Props {
    settingsButton: {
       isOpen: boolean;
