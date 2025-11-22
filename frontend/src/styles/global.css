@@ -25,6 +25,7 @@ svg * {
 
 a {
    color: inherit;
+
    &[class] {
       text-decoration: none;
    }

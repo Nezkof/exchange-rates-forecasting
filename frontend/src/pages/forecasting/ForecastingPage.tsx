@@ -12,10 +12,14 @@ import MetricsTable from "../../components/metricsTable/MetricsTable";
 import InfoWidget from "../../components/infoWidget/infoWidget";
 
 const ForecastingPage = () => {
-   const [isConfigOpen, setIsConfigOpen] = useState<boolean>(true);
+   const [isConfigOpen, setIsConfigOpen] = useState<boolean>(false);
 
    const handleSettingsButton = () => {
       setIsConfigOpen(!isConfigOpen);
+   };
+
+   const closeConfig = () => {
+      setIsConfigOpen(false);
    };
 
    const mutation = useMutation({
@@ -24,6 +28,10 @@ const ForecastingPage = () => {
 
    const onSubmit = (data: ForecastConfig) => {
       mutation.mutate(data);
+
+      if (window.innerWidth < 768) {
+         closeConfig();
+      }
    };
 
    return (
@@ -36,6 +44,14 @@ const ForecastingPage = () => {
                }}
                onSubmit={onSubmit}
             />
+
+            {/* 3. Додаємо Backdrop */}
+            {isConfigOpen && (
+               <div
+                  className="menu-backdrop"
+                  onClick={closeConfig}
+               ></div>
+            )}
 
             {!mutation.data && !mutation.isPending && (
                <InfoWidget
@@ -58,7 +74,6 @@ const ForecastingPage = () => {
             <SettingsButton
                isOpen={isConfigOpen}
                handleBtn={handleSettingsButton}
-               variant="hide-when-open"
             />
          </section>
       </>

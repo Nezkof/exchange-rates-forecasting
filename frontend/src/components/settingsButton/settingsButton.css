@@ -9,21 +9,17 @@
    max-width: max-content;
    align-self: flex-end;
 
+   position: absolute;
+   top: 20px;
+   right: 10px;
+   z-index: 1000;
+
    img {
       width: 40px;
+      transition: all 0.3s ease;
    }
 }
 
 .settings__button--open img {
    transform: rotateZ(180deg);
-}
-
-.settings__button--abs {
-   position: absolute;
-   top: 20px;
-   right: 10px;
-}
-
-.settings__button--invisible {
-   display: none;
 }

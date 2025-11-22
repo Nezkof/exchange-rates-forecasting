@@ -13,10 +13,14 @@ import PortfoliosInfo from "../../components/portfoliosInfo/PortfoliosInfo";
 import InfoWidget from "../../components/infoWidget/infoWidget";
 
 const OptimizationPage = () => {
-   const [isConfigOpen, setIsConfigOpen] = useState<boolean>(true);
+   const [isConfigOpen, setIsConfigOpen] = useState<boolean>(false);
 
    const handleSettingsButton = () => {
       setIsConfigOpen(!isConfigOpen);
+   };
+
+   const closeConfig = () => {
+      setIsConfigOpen(false);
    };
 
    const mutation = useMutation({
@@ -25,11 +29,14 @@ const OptimizationPage = () => {
 
    const onSubmit = (data: OptimizationConfig) => {
       mutation.mutate(data);
+      if (window.innerWidth < 768) {
+         closeConfig();
+      }
    };
 
    return (
       <>
-         <section className="page forecasting-page">
+         <section className="page optimization-page">
             <OptimizationSettings
                settingsButton={{
                   isOpen: isConfigOpen,
@@ -37,6 +44,13 @@ const OptimizationPage = () => {
                }}
                onSubmit={onSubmit}
             />
+
+            {isConfigOpen && (
+               <div
+                  className="menu-backdrop"
+                  onClick={closeConfig}
+               ></div>
+            )}
 
             {!mutation.data && !mutation.isPending && (
                <InfoWidget
@@ -59,7 +73,6 @@ const OptimizationPage = () => {
             <SettingsButton
                isOpen={isConfigOpen}
                handleBtn={handleSettingsButton}
-               variant="hide-when-open"
             />
          </section>
       </>

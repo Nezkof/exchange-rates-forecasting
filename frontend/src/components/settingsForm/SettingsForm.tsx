@@ -6,7 +6,6 @@ import type { ReactNode } from "react";
 import type { ZodSchema } from "zod";
 import ConfigLoader from "../configLoader/ConfigLoader";
 import { useLocalConfig } from "../../hooks/useConfig";
-import SettingsButton from "../settingsButton/SettingsButton";
 import "./form.css";
 
 interface SettingsFormProps<T extends FieldValues> {
@@ -60,8 +59,6 @@ function SettingsForm<T extends FieldValues>({
 
    return (
       <aside className={`${className} ${settingsButton.isOpen ? `${className}--open` : ""}`}>
-         <SettingsButton isOpen={settingsButton.isOpen} handleBtn={settingsButton.handleButton} />
-
          <form className={`settings-form`} onSubmit={handleSubmit(onSubmit)}>
             {children(register, errors)}
 

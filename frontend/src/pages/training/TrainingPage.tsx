@@ -12,10 +12,14 @@ import ErrorMessage from "../../components/errorMessage/ErrorMessage";
 import InfoWidget from "../../components/infoWidget/infoWidget";
 
 const TrainingPage = () => {
-   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(true);
+   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
 
    const handleSettingsButton = () => {
       setIsSettingsOpen(!isSettingsOpen);
+   };
+
+   const closeSettings = () => {
+      setIsSettingsOpen(false);
    };
 
    const mutation = useMutation({
@@ -24,6 +28,9 @@ const TrainingPage = () => {
 
    const onSubmit = (data: TrainConfig) => {
       mutation.mutate(data);
+      if (window.innerWidth < 768) {
+         closeSettings();
+      }
    };
 
    return (
@@ -36,6 +43,13 @@ const TrainingPage = () => {
                }}
                onSubmit={onSubmit}
             />
+
+            {isSettingsOpen && (
+               <div
+                  className="menu-backdrop"
+                  onClick={closeSettings}
+               ></div>
+            )}
 
             {!mutation.data && !mutation.isPending && (
                <InfoWidget
@@ -53,7 +67,6 @@ const TrainingPage = () => {
             <SettingsButton
                isOpen={isSettingsOpen}
                handleBtn={handleSettingsButton}
-               variant="hide-when-open"
             />
          </section>
       </>

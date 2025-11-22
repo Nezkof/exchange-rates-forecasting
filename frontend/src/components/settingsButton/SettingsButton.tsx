@@ -4,19 +4,13 @@ import "./settingsButton.css";
 interface Props {
    isOpen: boolean;
    handleBtn: () => void;
-   variant?: "default" | "hide-when-open";
 }
 
-const SettingsButton = ({ isOpen, handleBtn, variant = "default" }: Props) => {
-   if (variant === "hide-when-open" && isOpen) {
-      return null;
-   }
-
+const SettingsButton = ({ isOpen, handleBtn }: Props) => {
    return (
       <button
-         className={`settings__button ${
-            isOpen ? "settings__button--open" : "settings__button--abs"
-         }`}
+         className={`settings__button ${isOpen && "settings__button--open"}
+            `}
          onClick={handleBtn}
       >
          <img src={ChevronsLeft} alt="close" />
