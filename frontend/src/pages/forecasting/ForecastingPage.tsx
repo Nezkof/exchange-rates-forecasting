@@ -45,7 +45,6 @@ const ForecastingPage = () => {
                onSubmit={onSubmit}
             />
 
-            {/* 3. Додаємо Backdrop */}
             {isConfigOpen && (
                <div
                   className="menu-backdrop"

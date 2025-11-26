@@ -92,7 +92,7 @@ const TrainSettings = ({ settingsButton, onSubmit }: Props) => {
                   register={register}
                   name="epochs"
                   type="number"
-                  placeholder="3000"
+                  placeholder="300"
                   error={errors.epochs}
                />
                <InputField
@@ -124,7 +124,7 @@ const TrainSettings = ({ settingsButton, onSubmit }: Props) => {
                   register={register}
                   name="control_length"
                   type="number"
-                  placeholder="365"
+                  placeholder="30"
                   error={errors.control_length}
                />
             </>

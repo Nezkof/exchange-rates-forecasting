@@ -81,7 +81,7 @@ const ForecastSettings = ({ settingsButton, onSubmit }: Props) => {
                   register={register}
                   name="control_length"
                   type="number"
-                  placeholder="365"
+                  placeholder="30"
                   error={errors.control_length}
                />
             </>

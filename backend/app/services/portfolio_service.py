@@ -45,7 +45,7 @@ class PortfolioService:
         daily_returns_path = DATASETS_DIR / f"UAH_History_{csv_type}_pred_returns.csv"
         predictions_results = {}
         risk_threshold = risk_threshold / 100
-        rows_num = control_length * 5 + control_length
+        rows_num = control_length * 6 + control_length
 
         for ticker in tickers:
             forecast = LSTMService.forecast_custom(

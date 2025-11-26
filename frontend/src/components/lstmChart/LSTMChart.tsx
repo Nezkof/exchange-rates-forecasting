@@ -54,15 +54,15 @@ export function LSTMChart({ data }: LSTMChartProps) {
             pointRadius: 0,
             tension: 0.1,
          },
-         {
-            label: "Pure Control Results",
-            data: [...Array(data.train.results.length).fill(null), ...data.control.pure],
-            borderColor: "yellow",
-            backgroundColor: "rgba(255, 255, 0, 0.1)",
-            borderWidth: 2,
-            pointRadius: 0,
-            tension: 0.1,
-         },
+         // {
+         //    label: "Pure Control Results",
+         //    data: [...Array(data.train.results.length).fill(null), ...data.control.pure],
+         //    borderColor: "yellow",
+         //    backgroundColor: "rgba(255, 255, 0, 0.1)",
+         //    borderWidth: 2,
+         //    pointRadius: 0,
+         //    tension: 0.1,
+         // },
       ],
    };
 
