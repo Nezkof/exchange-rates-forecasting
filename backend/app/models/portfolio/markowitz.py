@@ -88,9 +88,9 @@ class MarkowitzMethod:
         )
         fig.update_layout(
             template="plotly_white",
-            xaxis=dict(title="Annualised Risk (Volatility)"),
-            yaxis=dict(title="Annualised Return"),
-            title="Sample of Random Portfolios",
+            xaxis=dict(title="Очікуваний ризик (Волатильність)"),
+            yaxis=dict(title="Очікуваний прибуток"),
+            title="Набір портфелів",
             width=850,
             height=500,
         )
@@ -150,10 +150,10 @@ class MarkowitzMethod:
         max_return = float(np.max(all_returns)) if len(all_returns) > 0 else 1.0
 
         metadata = {
-            "x_axis_label": "Annualised Risk (Volatility)",
-            "y_axis_label": "Annualised Return",
-            "color_bar_label": "Sharpe Ratio",
-            "chart_title": f"Portfolios below {self.risk_threshold * 100:.0f}% Risk",
+            "x_axis_label": "Очікуваний ризик (Волатильність)",
+            "y_axis_label": "Очікуваний прибуток",
+            "color_bar_label": "Коефіцієнт шарпа",
+            "chart_title": f"Портфелі з ризиком менше за {self.risk_threshold * 100:.0f}%",
             "x_range": [min_risk, max_risk],
             "y_range": [min_return, max_return],
         }

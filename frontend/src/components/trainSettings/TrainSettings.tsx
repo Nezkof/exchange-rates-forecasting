@@ -54,7 +54,7 @@ const TrainSettings = ({ settingsButton, onSubmit }: Props) => {
                   error={errors.hidden_size}
                />
                <InputField
-                  label="Розмір вікнА"
+                  label="Розмір вікна"
                   register={register}
                   name="window_size"
                   type="number"

@@ -1,11 +1,11 @@
 :root {
-   --color-light: #efefef;
+   --color-light: #121212;
    --color-light-10: #3a3a3a;
-   --color-dark: #121212;
-   --color-dark-10: #161616;
-   --color-dark-20: hsl(0, 0%, 8%);
+   --color-dark: #F9F8F6;
+   --color-dark-10: #EFE9E3;
+   --color-dark-20: #D9CFC7;
 
-   --color-accent: #b08bea;
+   --color-accent: #C9B59C;
    --color-accent-10: #251f2d;
    --color-accent-20: hsl(266, 19%, 13%);
 

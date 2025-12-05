@@ -19,7 +19,7 @@ export function LSTMChart({ data }: LSTMChartProps) {
       labels: [...data.train.dates, ...data.control.dates],
       datasets: [
          {
-            label: "Train Results",
+            label: "Результати тренування",
             data: [...data.train.results, ...Array(data.control.results.length).fill(null)],
             borderColor: "blue",
             backgroundColor: "rgba(0, 0, 255, 0.1)",
@@ -28,7 +28,7 @@ export function LSTMChart({ data }: LSTMChartProps) {
             tension: 0.1,
          },
          {
-            label: "Expected Train Results",
+            label: "Очікувані результати тренування",
             data: [...data.train.expected, ...Array(data.control.expected.length).fill(null)],
             borderColor: "red",
             backgroundColor: "rgba(255, 0, 0, 0.1)",
@@ -37,7 +37,7 @@ export function LSTMChart({ data }: LSTMChartProps) {
             tension: 0.1,
          },
          {
-            label: "Control Results",
+            label: "Контрольні результати",
             data: [...Array(data.train.results.length).fill(null), ...data.control.results],
             borderColor: "lightblue",
             backgroundColor: "rgba(173, 216, 230, 0.1)",
@@ -46,7 +46,7 @@ export function LSTMChart({ data }: LSTMChartProps) {
             tension: 0.1,
          },
          {
-            label: "Expected Control Results",
+            label: "Очікувані контрольні результати",
             data: [...Array(data.train.expected.length).fill(null), ...data.control.expected],
             borderColor: "pink",
             backgroundColor: "rgba(255, 192, 203, 0.1)",
@@ -85,7 +85,8 @@ export function LSTMChart({ data }: LSTMChartProps) {
          },
          title: {
             display: true,
-            text: "LSTM Training Results",
+            text: "Результати LSTM",
+            color: "№00000",
             font: {
                size: 18,
             },
@@ -117,7 +118,7 @@ export function LSTMChart({ data }: LSTMChartProps) {
             display: true,
             title: {
                display: true,
-               text: "Date",
+               text: "Дата",
                font: {
                   size: 14,
                },
@@ -136,7 +137,7 @@ export function LSTMChart({ data }: LSTMChartProps) {
             display: true,
             title: {
                display: true,
-               text: "Value",
+               text: "Значення",
                font: {
                   size: 14,
                },

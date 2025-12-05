@@ -6,9 +6,9 @@ interface Props {
 }
 
 const metricDetails = {
-   MAE: "Mean Absolute Error",
-   MAPE: "Mean Absolute Percentage Error",
-   RMSE: "Root Mean Squared Error",
+   MAE: "Середня абсолютна похибка",
+   MAPE: "Середня абсолютна процентна похибка",
+   RMSE: "Середньоквадратична похибка",
 };
 
 const MetricsTable = ({ data }: Props) => {

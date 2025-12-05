@@ -1,6 +1,6 @@
 .side-menu {
    padding: 20px;
-   border-right: 1px solid var(--color-light-10);
+   border-right: 1px solid var(--color-dark-20);
    min-height: 100vh;
    background-color: var(--color-dark-10);
    transition: transform 0.3s ease-in-out;
@@ -27,7 +27,7 @@
 }
 
 .navigation-menu__link--active {
-   border: 2px solid var(--color-accent-10);
+   border: 2px solid var(--color-dark-20);
 }
 
 .navigation-menu__link:hover:not(.navigation-menu__link--active) {

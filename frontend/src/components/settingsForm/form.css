@@ -20,7 +20,7 @@
 }
 
 .settings-form::-webkit-scrollbar-thumb {
-   background-color: var(--color-accent-10);
+   background-color: var(--color-accent);
    border-radius: 4px;
 }
 
@@ -68,7 +68,7 @@
 
    button {
       background: var(--color-accent);
-      color: var(--color-dark);
+      color: var(--color-light);
       border: none;
       border-radius: 10px;
       padding: 10px;

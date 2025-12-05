@@ -4,17 +4,15 @@
    "results_path": "./results/results.xlsx",
    "column_name": "CNY",
    "load_weights": "True",
-
    "hidden_size": 256,
    "output_size": 1,
    "window_size": 50,
    "batch_size": 64,
    "learning_rate": 0.0001,
    "learning_rate_decrease_speed": 0.001,
-   "epochs": 500,
+   "epochs": 1,
    "precision": 0.00001,
    "optimizer": "ADAM",
-
-   "data_length": 5000,
-   "control_length": 730
+   "data_length": 3650,
+   "control_length": 30
 }

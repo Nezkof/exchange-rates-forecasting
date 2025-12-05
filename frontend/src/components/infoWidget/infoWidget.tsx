@@ -13,7 +13,7 @@ const InfoWidget = ({ text, type }: Props) => {
                className="info-widget__icon"
                xmlns="http://www.w3.org/2000/svg"
                viewBox="0 0 24 24"
-               stroke="currentColor"
+               stroke="№000000"
                strokeWidth="1.5"
                strokeLinecap="round"
                strokeLinejoin="round"

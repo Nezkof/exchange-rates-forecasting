@@ -135,9 +135,8 @@ const PortfoliosChart = ({ data }: PortfoliosChartProps) => {
       <div className="chart-wrapper">
          <div className="chart-controls">
             <button onClick={handleResetZoom} className="reset-zoom-btn">
-               Reset Zoom
+               Скинути масштабування
             </button>
-            <span className="chart-hint">Scroll to zoom | Ctrl + Drag to pan</span>
          </div>
          <div className="chart-container">
             <Scatter ref={chartRef} data={chartData} options={options} />
